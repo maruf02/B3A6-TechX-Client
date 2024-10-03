@@ -10,6 +10,7 @@ import Following from "@/components/Following/Following";
 
 import { jwtDecode } from "jwt-decode";
 import ShowPost from "@/components/MyPost/ShowPost";
+import MyProfile from "@/components/MyProfile/MyProfile";
 
 const UserProfilePage = () => {
   // State to track the selected option
@@ -28,7 +29,7 @@ const UserProfilePage = () => {
       case "Profile":
         return (
           <div>
-            <ShowPost />
+            <MyProfile />
           </div>
         );
       case "Analytics":
@@ -65,7 +66,7 @@ const UserProfilePage = () => {
   };
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto">
       <div className="w-full h-full min-h-screen border border-2 border-red-600 ">
         {/* cover image */}
         <div className="w-full h-96 border border-2 border-green-600 ">
@@ -84,7 +85,7 @@ const UserProfilePage = () => {
           />
         </div>
         {/* different option */}
-        <div className="w-full lg:w-4/12 h-28 border border-2 border-green-600 relative lg:left-[18%] -top-24 lg:-top-56">
+        <div className="w-full lg:w-4/12 h-28 border border-2 border-green-600 relative lg:left-[24%] -top-24 lg:-top-56">
           <div className="text-4xl font-bold px-10 border border-2 border-blue-600 h-1/2">
             {userName}
           </div>

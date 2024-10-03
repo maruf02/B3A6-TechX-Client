@@ -95,6 +95,21 @@ export const baseApi = createApi({
       }),
     }),
 
+    createPayment: builder.mutation({
+      query: (BookingData) => ({
+        url: "/payment",
+        method: "POST",
+        body: BookingData,
+      }),
+    }),
+
+    getPaymentByUserId: builder.query({
+      query: (userId: string) => `/payments/user/${userId}`, // Adjust the endpoint if needed
+    }),
+    getUserById: builder.query({
+      query: (userId) => `/auth/usersId/${userId}`,
+    }),
+
     getPostByUserId: builder.query({
       query: (userId) => `/posts/user/${userId}`,
     }),
@@ -122,4 +137,7 @@ export const {
   useLikePostMutation,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
+  useGetUserByIdQuery,
+  useCreatePaymentMutation,
+  useGetPaymentByUserIdQuery,
 } = baseApi;

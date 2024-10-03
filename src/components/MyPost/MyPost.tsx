@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Select, Space } from "antd";
+import { Button, Modal, Select, Space, Spin } from "antd"; // Import Spin for loading spinner
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Quill editor styles
 import {
@@ -15,6 +15,7 @@ const MyPost = () => {
   const [category, setCategory] = useState(""); // Category state
   const [type, setType] = useState(""); // Type state
   const [file, setFile] = useState<File | null>(null); // File state
+  const [loading, setLoading] = useState(false); // Loading state for button
   const [createPost] = useCreatePostMutation();
 
   // Fetch user posts
@@ -119,6 +120,8 @@ const MyPost = () => {
       return; // Stop the submission if validation fails
     }
 
+    setLoading(true); // Start loading
+
     let imageUrl = ""; // Placeholder for image URL
     if (file) {
       imageUrl = await uploadImageToCloudinary(); // Upload image if selected
@@ -143,83 +146,125 @@ const MyPost = () => {
 
       // Refetch the posts after creation
       refetch(); // Refetch the posts
+
+      setLoading(false); // Stop loading
+      setOpen(false); // Close modal after submitting
     } catch (error) {
       console.error("Failed to create post:", error);
+      setLoading(false); // Stop loading
     }
+  };
+
+  // Modal option
+  const [open, setOpen] = useState(false);
+
+  const showModal = () => {
+    setOpen(true); // Open modal
+  };
+
+  const handleOk = () => {
+    handleSubmit(); // Trigger submit on modal confirm
+  };
+
+  const handleCancel = () => {
+    setOpen(false); // Close modal
   };
 
   return (
     <div>
-      <h1 className="text-4xl underline text-center py-5">
+      {/* <h1 className="text-4xl underline text-center py-5">
         Create your Blog Post
-      </h1>
+      </h1> */}
 
-      {/* Quill Editor */}
-      <ReactQuill
-        theme="snow" // Using the 'snow' theme
-        value={editorContent} // Binding content to state
-        onChange={handleEditorChange} // Handling changes
-        className="bg-white border rounded-md min-h-32 w-2/4 mx-auto" // Styling for the editor
-        placeholder="Write something about yourself..." // Placeholder
-      />
-
-      {/* Options and Upload */}
-      <div className="flex gap-5 border border-2 border-green-600 w-2/4 h-16 mx-auto mt-2">
-        {/* Category Select */}
-        <div className="flex gap-1">
-          <h1>Select Category</h1>
-          <Space wrap>
-            <Select
-              defaultValue="Select"
-              style={{ width: 120 }}
-              onChange={handleCategoryChange}
-              options={[
-                { value: "Web", label: "Web" },
-                { value: "Software", label: "Software" },
-                { value: "Engineering", label: "Engineering" },
-                { value: "AI", label: "AI" },
-              ]}
-            />
-          </Space>
-        </div>
-
-        {/* Type Select */}
-        <div className="flex gap-1">
-          <h1>Select Type</h1>
-          <Space wrap>
-            <Select
-              defaultValue="Select"
-              style={{ width: 120 }}
-              onChange={handleTypeChange}
-              options={[
-                { value: "Free", label: "Free" },
-                { value: "Premium", label: "Premium" },
-              ]}
-            />
-          </Space>
-        </div>
-
-        {/* Upload Portion */}
-        <div>
-          <input
-            type="file"
-            className="file-input w-full max-w-xs"
-            onChange={handleFileChange} // Handle file change
-          />
-        </div>
-      </div>
-
-      {/* Submit Button */}
-      <div className="w-2/4 mx-auto">
-        <Button type="primary" className="w-full mt-2" onClick={handleSubmit}>
-          Submit
+      {/* Button to open modal */}
+      <div className="w-2/4 mx-auto mb-4">
+        <Button
+          type="primary"
+          onClick={showModal}
+          className="w-full btn-lg text-4xl"
+        >
+          Create a New Blog
         </Button>
       </div>
+
+      {/* Modal section */}
+      <Modal
+        title="Create New Post"
+        open={open}
+        onOk={handleOk} // Trigger handleOk on modal confirm
+        onCancel={handleCancel} // Handle modal close
+        okText="Submit"
+        cancelText="Cancel"
+        width={1000} // Adjust modal width as needed
+      >
+        {loading ? (
+          <div className="flex justify-center items-center">
+            <Spin size="large" /> {/* Show spinner during loading */}
+          </div>
+        ) : (
+          <>
+            {/* Quill Editor */}
+            <ReactQuill
+              theme="snow" // Using the 'snow' theme
+              value={editorContent} // Binding content to state
+              onChange={handleEditorChange} // Handling changes
+              className="bg-white border rounded-md min-h-32 w-full" // Styling for the editor
+              placeholder="Write something about yourself..." // Placeholder
+            />
+
+            {/* Options and Upload */}
+            <div className="flex gap-5 border w-full h-16 mt-2">
+              {/* Category Select */}
+              <div className="flex gap-1 items-center">
+                <h1>Select Category</h1>
+                <Space wrap>
+                  <Select
+                    defaultValue="Select"
+                    style={{ width: 120 }}
+                    onChange={handleCategoryChange}
+                    options={[
+                      { value: "Web", label: "Web" },
+                      { value: "Software", label: "Software" },
+                      { value: "Engineering", label: "Engineering" },
+                      { value: "AI", label: "AI" },
+                    ]}
+                  />
+                </Space>
+              </div>
+
+              {/* Type Select */}
+              <div className="flex gap-1 items-center">
+                <h1>Select Type</h1>
+                <Space wrap>
+                  <Select
+                    defaultValue="Select"
+                    style={{ width: 120 }}
+                    onChange={handleTypeChange}
+                    options={[
+                      { value: "Free", label: "Free" },
+                      { value: "Premium", label: "Premium" },
+                    ]}
+                  />
+                </Space>
+              </div>
+
+              {/* Upload Portion */}
+              <div className="flex items-center">
+                <input
+                  type="file"
+                  className="file-input w-full max-w-xs items-center bg-transparent"
+                  onChange={handleFileChange} // Handle file change
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </Modal>
+
       {/* for showing all post */}
       <div>
         <ShowPost />
       </div>
-      {/* for showing all post */}
     </div>
   );
 };
