@@ -1,15 +1,25 @@
-import { useCreatePaymentMutation } from "@/Redux/api/baseApi";
+import {
+  useCreatePaymentMutation,
+  useGetPaymentByUserIdQuery,
+} from "@/Redux/api/baseApi";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
-import React from "react";
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 import VerifyUser from "./VerifyUser";
+import { verifyPayment } from "./Isverify";
 
 const Payments = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [createPayment] = useCreatePaymentMutation();
 
   const token = localStorage.getItem("accessToken");
   const userId = token ? jwtDecode(token)._id : null;
+
+  const { data: payments } = useGetPaymentByUserIdQuery(userId || "", {
+    skip: !userId,
+  });
+  const payment = payments?.data || [];
 
   const getCurrentDate = () => moment().format("DD-MM-YYYY");
 
@@ -17,8 +27,14 @@ const Payments = () => {
     const endDate = moment().add(30, "days");
     return endDate.format("DD-MM-YYYY");
   };
+  const isVerify = verifyPayment(payment.endTime);
 
   const handlePaymentSubmit = async () => {
+    if (isVerify === "yes") {
+      // Show message if the payment is verified (already completed)
+      Swal.fire("Payment Already Paid, Thanks!");
+      return; // Exit the function, no further action required
+    }
     try {
       const paymentData = {
         bookingId: userId,
@@ -37,11 +53,11 @@ const Payments = () => {
       // Check if the response contains the expected payment_url
       if (res.data && res.data.payment_url) {
         window.location.href = res.data.payment_url;
-        Swal.fire(
-          "Payment Successful",
-          "Your payment has been processed",
-          "success"
-        );
+        // Swal.fire(
+        //   "Payment Successful",
+        //   "Your payment has been processed",
+        //   "success"
+        // );
       } else {
         throw new Error("Payment URL not found in response.");
       }
@@ -55,17 +71,58 @@ const Payments = () => {
     }
   };
 
+  const openModal = () => {
+    setIsOpen(true); // Open modal
+  };
+
+  const closeModal = () => {
+    setIsOpen(false); // Close modal
+  };
+
   return (
     <div>
-      <h1>Payment Demo</h1>
-      <button
+      <h1 className="text-4xl text-center py-8">Pay for Premium access</h1>
+
+      <div>
+        <button
+          onClick={openModal}
+          className="flex mx-auto text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-3/4 text-2xl pb-1"
+        >
+          Proceed to Pay
+        </button>
+
+        {/* Modal Dialog */}
+        {isOpen && (
+          <dialog className="modal" open>
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Welcome!</h3>
+              <p className="py-4">Amount: $20</p>
+              <p className="py-4">Expire Date:: {getEndDate()}</p>
+              <div className="modal-action">
+                <button
+                  onClick={handlePaymentSubmit}
+                  className="flex mx-auto text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-3/4 text-2xl pb-1"
+                >
+                  Proceed to Pay
+                </button>
+                <button
+                  className="btn text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </dialog>
+        )}
+      </div>
+
+      {/* <button
         onClick={handlePaymentSubmit}
-        className="flex text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-full text-2xl pb-1"
+        className="flex mx-auto text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-3/4 text-2xl pb-1"
       >
         Proceed to Pay
-      </button>
-
-      <VerifyUser />
+      </button> */}
     </div>
   );
 };

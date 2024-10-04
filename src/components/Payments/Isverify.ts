@@ -1,18 +1,9 @@
 import moment from "moment";
 
-interface Payment {
-  startTime: string; // Assuming startTime and endTime are in ISO string format
-  endTime: string;
-}
+// Utility function to verify if the current date is before the end date
+export const verifyPayment = (endTime: string) => {
+  const currentDate = moment(); // Get current date as a Moment.js object
+  const endDate = moment(endTime, "DD-MM-YYYY"); // Convert payment end time to Moment.js
 
-export const isUserVerified = (payments: Payment[]): boolean => {
-  const today = moment(); // Get today's date
-
-  return payments.some((payment) => {
-    const startTime = moment(payment.startTime);
-    const endTime = moment(payment.endTime);
-
-    // Check if today's date is between startTime and endTime
-    return today.isBetween(startTime, endTime, "day", "[]"); // Inclusive of both dates
-  });
+  return endDate.isAfter(currentDate) ? "yes" : "No";
 };

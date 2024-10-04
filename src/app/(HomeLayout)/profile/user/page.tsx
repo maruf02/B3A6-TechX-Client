@@ -11,13 +11,32 @@ import Following from "@/components/Following/Following";
 import { jwtDecode } from "jwt-decode";
 import ShowPost from "@/components/MyPost/ShowPost";
 import MyProfile from "@/components/MyProfile/MyProfile";
+import { useGetUserByIdQuery } from "@/Redux/api/baseApi";
 
 const UserProfilePage = () => {
   // State to track the selected option
   const [selectedOption, setSelectedOption] = useState<string>("Post");
   const token = localStorage.getItem("accessToken");
   const userName = token ? jwtDecode(token).name : null;
-  // Function to render content based on selected option
+
+  let userId = null;
+  if (token) {
+    const decodedToken: any = jwtDecode(token);
+    userId = decodedToken._id; // Get the userId from the decoded token
+  }
+  console.log(userId);
+  // Use RTK Query to fetch user data based on userId
+  const {
+    data: userData,
+    error,
+    isLoading,
+  } = useGetUserByIdQuery(userId, {
+    skip: !userId, // Skip the query if userId is not available
+  });
+  //   const userData = userDataa.data;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading user data</div>;
+
   const renderContent = () => {
     switch (selectedOption) {
       case "Post":
@@ -71,7 +90,10 @@ const UserProfilePage = () => {
         {/* cover image */}
         <div className="w-full h-96 border border-2 border-green-600 ">
           <img
-            src="https://images.pexels.com/photos/751005/pexels-photo-751005.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            src={
+              userData?.data?.coverImage ||
+              "https://images.pexels.com/photos/751005/pexels-photo-751005.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            }
             alt=""
             className="w-full h-full"
           />
@@ -79,7 +101,10 @@ const UserProfilePage = () => {
         {/* profile image */}
         <div className="w-60 h-60 rounded-2xl border border-2 border-blue-600 relative -top-28 left-10">
           <img
-            src="https://images.pexels.com/photos/751005/pexels-photo-751005.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            src={
+              userData?.data?.profileImage ||
+              "https://images.pexels.com/photos/751005/pexels-photo-751005.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            }
             alt=""
             className="w-full h-full"
           />

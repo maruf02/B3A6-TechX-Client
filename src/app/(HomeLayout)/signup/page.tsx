@@ -18,6 +18,10 @@ const SignUpPage = () => {
       password: values.password,
       phone: values.phone,
       address: "",
+      profileImage:
+        "https://images.pexels.com/photos/751005/pexels-photo-751005.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      coverImage:
+        "https://images.pexels.com/photos/40731/ladybug-drop-of-water-rain-leaf-40731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     };
     console.log("object", userInfo);
     registerUser(userInfo)
@@ -152,7 +156,7 @@ const SignUpPage = () => {
                               label="Phone Number"
                               rules={[
                                 {
-                                  required: false,
+                                  required: true,
                                   message: "Please input your phone number!",
                                 },
                               ]}

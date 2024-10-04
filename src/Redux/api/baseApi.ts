@@ -40,9 +40,22 @@ export const baseApi = createApi({
       }),
     }),
 
-    getAllPosts: builder.query({
+    updateUserById: builder.mutation({
+      query: ({ id, updatedUser }) => ({
+        url: `auth/usersInfo/${id}`,
+        method: "PUT",
+        body: updatedUser,
+      }),
+    }),
+
+    getAllPostsMain: builder.query({
       query: () => "/posts",
     }),
+
+    getAllPosts: builder.query({
+      query: ({ page, limit }) => `/posts?page=${page}&limit=${limit}`, // Support pagination
+    }),
+
     createPost: builder.mutation({
       query: (postData) => ({
         url: "/posts",
@@ -50,7 +63,19 @@ export const baseApi = createApi({
         body: postData,
       }),
     }),
-
+    updatePostById: builder.mutation({
+      query: ({ postId, updatePost }) => ({
+        url: `posts/${postId}`,
+        method: "PUT",
+        body: updatePost,
+      }),
+    }),
+    deletePostById: builder.mutation({
+      query: (id) => ({
+        url: `posts/${id}`,
+        method: "DELETE",
+      }),
+    }),
     postComment: builder.mutation({
       query: (commentData) => ({
         url: `/comments`,
@@ -125,9 +150,13 @@ export const baseApi = createApi({
 export const {
   useGetAllCarsQuery,
   useLoginUserMutation,
+  useUpdateUserByIdMutation,
   useRegisterUserMutation,
   useRefreshTokenMutation,
   useCreatePostMutation,
+  useUpdatePostByIdMutation,
+  useDeletePostByIdMutation,
+  useGetAllPostsMainQuery,
   useGetAllPostsQuery,
   useGetPostByUserIdQuery,
   useGetPostByPostIdQuery,
