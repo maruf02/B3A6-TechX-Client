@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useGetAllPostsQuery } from "@/Redux/api/baseApi"; // Replace with the correct import path
 import Link from "next/link";
+import { jwtDecode } from "jwt-decode";
 
 const HomePage = () => {
   const [page, setPage] = useState(1); // Initial page set to 1
@@ -43,6 +44,9 @@ const HomePage = () => {
     };
   }, [isFetching, hasMore]);
 
+  const token = localStorage.getItem("accessToken");
+  const userId = token ? jwtDecode(token)._id : null;
+
   return (
     <div className="mx-auto my-2 max-w-3xl mt-5">
       {/* Display posts */}
@@ -59,11 +63,16 @@ const HomePage = () => {
                 alt="User"
               />
               <div className="ml-3">
-                <h2 className="text-lg font-semibold">{post.name}</h2>
+                <Link href={`/profileView/${post.userId}`}>
+                  <h2 className="text-lg font-semibold">{post.name}</h2>
+                </Link>
                 <p className="">
                   {post.category} | {post.type}
                 </p>
               </div>
+            </div>
+            <div className="card-actions justify-end items-center mr-5">
+              <button className="btn btn-primary">Follow</button>
             </div>
           </div>
           <div className="px-4">

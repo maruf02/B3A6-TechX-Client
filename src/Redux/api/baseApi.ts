@@ -76,6 +76,14 @@ export const baseApi = createApi({
         method: "DELETE",
       }),
     }),
+
+    followUser: builder.mutation({
+      query: ({ userId, followerId }) => ({
+        url: `/follow/${userId}`,
+        method: "POST",
+        body: { followerId, userId },
+      }),
+    }),
     postComment: builder.mutation({
       query: (commentData) => ({
         url: `/comments`,
@@ -169,4 +177,5 @@ export const {
   useGetUserByIdQuery,
   useCreatePaymentMutation,
   useGetPaymentByUserIdQuery,
+  useFollowUserMutation,
 } = baseApi;
