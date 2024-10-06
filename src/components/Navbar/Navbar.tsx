@@ -7,8 +7,9 @@ import Cookies from "js-cookie";
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
-  const accessToken =
-    Cookies.get("accessToken") || localStorage.getItem("accessToken");
+  // const accessToken =
+  //   Cookies.get("accessToken") || localStorage.getItem("accessToken");
+  const accessToken = localStorage.getItem("accessToken");
   useEffect(() => {
     // Check if the access token exists in cookies or localStorage
 

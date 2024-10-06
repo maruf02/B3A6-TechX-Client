@@ -58,7 +58,13 @@ const PostDetails = ({ params }) => {
   // Handle posting comment
   const handlePostComment = async () => {
     if (!commentText.trim()) return;
-    const newComment = { userId, name, postId, comment: commentText };
+    const newComment = {
+      userId,
+      userIdP: userId,
+      name,
+      postId,
+      comment: commentText,
+    };
     try {
       await postComment(newComment).unwrap();
       setCommentText("");
@@ -233,7 +239,12 @@ const PostDetails = ({ params }) => {
                         </div>
                       ) : (
                         <div className="flex items-center justify-between">
-                          <p>{comment.comment}</p>
+                          <p>
+                            <span className="text-red-400">
+                              {comment.userIdP.name}
+                            </span>
+                            {comment.comment}
+                          </p>
                           {comment.userId === userId && (
                             <div className="flex gap-2">
                               <button

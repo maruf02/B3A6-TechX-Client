@@ -31,6 +31,19 @@ export const baseApi = createApi({
       }),
       // providesTags: ["Auth"], // Use this to revalidate tokens
     }),
+    updatePassword: builder.mutation({
+      query: ({ email, password }) => ({
+        url: `/auth/usersPass/${email}`,
+        method: "PUT",
+        body: { password },
+      }),
+    }),
+    GetUserEmail: builder.query({
+      query: (email: string) => ({
+        url: `/auth/usersEmail/${email}`,
+        method: "GET",
+      }),
+    }),
 
     registerUser: builder.mutation({
       query: (userData) => ({
@@ -158,6 +171,8 @@ export const baseApi = createApi({
 export const {
   useGetAllCarsQuery,
   useLoginUserMutation,
+  useUpdatePasswordMutation,
+  useGetUserEmailQuery,
   useUpdateUserByIdMutation,
   useRegisterUserMutation,
   useRefreshTokenMutation,

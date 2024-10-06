@@ -37,7 +37,7 @@ const Payments = () => {
     }
     try {
       const paymentData = {
-        bookingId: userId,
+        userIdP: userId,
         userId: userId,
         amount: "20", // Make sure this is a number, not a string
         paymentMethod: "credit_card", // example

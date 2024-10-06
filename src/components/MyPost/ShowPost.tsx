@@ -38,6 +38,7 @@ const ShowPost = () => {
     skip: !userId, // Skip query if userId is not available
   });
 
+  console.log("userId", userId);
   const [updatePostById] = useUpdatePostByIdMutation(); // Mutation hook for updating post
   const [deletePostById] = useDeletePostByIdMutation(); // Mutation hook for deleting post
 

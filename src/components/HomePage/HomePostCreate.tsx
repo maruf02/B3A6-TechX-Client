@@ -8,9 +8,8 @@ import {
 } from "@/Redux/api/baseApi";
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
-import ShowPost from "./ShowPost";
 
-const MyPost = () => {
+const HomePostCreate = () => {
   const [editorContent, setEditorContent] = useState(""); // Editor content state
   const [category, setCategory] = useState(""); // Category state
   const [type, setType] = useState(""); // Type state
@@ -128,7 +127,7 @@ const MyPost = () => {
     }
 
     const postData = {
-      userId: userData.userId, // Set the userId dynamically
+      userId: userData.userId,
       userIdP: userData.userId, // Set the userId dynamically
       name: userData.name, // Set the name dynamically
       email: userData.email, // Set the email dynamically
@@ -263,11 +262,8 @@ const MyPost = () => {
       </Modal>
 
       {/* for showing all post */}
-      <div>
-        <ShowPost />
-      </div>
     </div>
   );
 };
 
-export default MyPost;
+export default HomePostCreate;
