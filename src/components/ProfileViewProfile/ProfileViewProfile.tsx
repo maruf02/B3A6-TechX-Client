@@ -8,7 +8,7 @@ const ProfileViewProfile = ({ userId }) => {
     error,
     isLoading,
   } = useGetUserByIdQuery(userId, { skip: !userId });
-
+  console.log("object", userData?.data?.follower?.length);
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading user data</div>;
 
@@ -25,6 +25,12 @@ const ProfileViewProfile = ({ userId }) => {
           <h2 className="card-title">
             {userData?.data?.phone || "Phone not available"}
           </h2>
+          <h2 className="card-title">
+            Total Followers: {userData?.data?.follower?.length || 0}
+          </h2>
+          <h1 className="card-title">
+            Total Following: {userData?.data?.following?.length || 0}
+          </h1>
           <img
             src={
               userData?.data?.profileImage || "https://via.placeholder.com/150"

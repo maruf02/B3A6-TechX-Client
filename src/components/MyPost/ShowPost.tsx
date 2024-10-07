@@ -5,7 +5,7 @@ import {
   useDeletePostByIdMutation,
 } from "@/Redux/api/baseApi";
 import { Modal, Select, Space, Spin, message } from "antd";
-import { jwtDecode } from "jwt-decode"; // Ensure correct import
+import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
@@ -13,14 +13,13 @@ import Swal from "sweetalert2";
 
 const ShowPost = () => {
   const [open, setOpen] = useState(false);
-  const [editorContent, setEditorContent] = useState(""); // Editor content state
-  const [category, setCategory] = useState(""); // Category state
-  const [type, setType] = useState(""); // Type state
-  const [file, setFile] = useState<File | null>(null); // File state
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null); // Post ID for editing
-  const [loading, setLoading] = useState(false); // Loading state for button
+  const [editorContent, setEditorContent] = useState("");
+  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Retrieve the token from local storage
   const token = localStorage.getItem("accessToken");
 
   let userId = null;
@@ -29,23 +28,20 @@ const ShowPost = () => {
     userId = decodedToken._id;
   }
 
-  // Fetch posts by userId using RTK Query
   const {
     data: posts,
     isLoading,
     refetch,
   } = useGetPostByUserIdQuery(userId, {
-    skip: !userId, // Skip query if userId is not available
+    skip: !userId,
   });
 
   console.log("userId", userId);
-  const [updatePostById] = useUpdatePostByIdMutation(); // Mutation hook for updating post
-  const [deletePostById] = useDeletePostByIdMutation(); // Mutation hook for deleting post
+  const [updatePostById] = useUpdatePostByIdMutation();
+  const [deletePostById] = useDeletePostByIdMutation();
 
-  // Display loading state
   if (isLoading) return <div>Loading...</div>;
 
-  // Handle case where no posts are available
   if (!posts || posts.length === 0) {
     return (
       <div className="text-4xl text-center py-10">
@@ -54,24 +50,23 @@ const ShowPost = () => {
     );
   }
 
-  // Reverse the posts array to show the latest post first
   const reversedPosts = posts.slice().reverse();
 
   // Modal option
   const showModal = (post: any) => {
-    setSelectedPostId(post._id); // Set the selected post ID
-    setEditorContent(post.post); // Set initial content in editor
-    setCategory(post.category); // Set initial category
-    setType(post.type); // Set initial type
-    setOpen(true); // Open modal
+    setSelectedPostId(post._id);
+    setEditorContent(post.post);
+    setCategory(post.category);
+    setType(post.type);
+    setOpen(true);
   };
 
   const uploadImageToCloudinary = async () => {
-    if (!file) return null; // No file selected
+    if (!file) return null;
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "frontend_preset"); // Your Cloudinary upload preset
+    formData.append("upload_preset", "frontend_preset");
 
     try {
       const response = await fetch(
@@ -82,10 +77,10 @@ const ShowPost = () => {
         }
       );
       const data = await response.json();
-      return data.secure_url; // Return the image URL
+      return data.secure_url;
     } catch (error) {
       console.error("Error uploading image:", error);
-      return null; // Return null if upload fails
+      return null;
     }
   };
 
@@ -95,9 +90,9 @@ const ShowPost = () => {
       (post) => post._id === selectedPostId
     )?.images;
 
-    let imageUrl = ""; // Placeholder for image URL
+    let imageUrl = "";
     if (file) {
-      imageUrl = await uploadImageToCloudinary(); // Upload image if selected
+      imageUrl = await uploadImageToCloudinary();
     }
 
     try {
@@ -107,7 +102,7 @@ const ShowPost = () => {
           post: editorContent,
           category,
           type,
-          images: imageUrl || previousImage, // Add file if image upload functionality is supported
+          images: imageUrl || previousImage,
         },
       }).unwrap();
       message.success("Post updated successfully!");
@@ -117,42 +112,37 @@ const ShowPost = () => {
       message.error("Failed to update post.");
     } finally {
       setLoading(false);
-      setOpen(false); // Close modal
+      setOpen(false);
     }
   };
 
   const handleCancel = () => {
-    setOpen(false); // Close modal
+    setOpen(false);
   };
 
-  // Handler for content changes in Quill editor
   const handleEditorChange = (content: string) => {
-    setEditorContent(content); // Save content in state
+    setEditorContent(content);
   };
 
-  // Handler for category selection
   const handleCategoryChange = (value: string) => {
-    setCategory(value); // Update category state
+    setCategory(value);
   };
 
-  // Handler for type selection
   const handleTypeChange = (value: string) => {
-    setType(value); // Update type state
+    setType(value);
   };
 
-  // Handler for file change
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setFile(event.target.files[0]); // Save the selected file
+      setFile(event.target.files[0]);
     }
   };
 
-  // Delete Post handler
   const handleDelete = async (postId: string) => {
     try {
       await deletePostById(postId).unwrap();
       message.success("Post deleted successfully!");
-      refetch(); // Success message
+      refetch();
     } catch (error) {
       message.error("Failed to delete post.");
     }
@@ -169,7 +159,9 @@ const ShowPost = () => {
             <div className="flex items-center mb-4 p-4">
               <img
                 className="h-10 w-10 rounded-full"
-                src={post.userImage || "https://via.placeholder.com/150"}
+                src={
+                  post.userIdP.profileImage || "https://via.placeholder.com/150"
+                }
                 alt="User"
               />
               <div className="ml-3">
@@ -181,13 +173,13 @@ const ShowPost = () => {
             </div>
             <div className="flex gap-3 p-4">
               <button
-                className="btn btn-primary"
+                className="btn btn-sm btn-primary"
                 onClick={() => showModal(post)}
               >
                 Edit
               </button>
               <button
-                className="btn btn-warning"
+                className="btn btn-sm btn-warning"
                 onClick={() => handleDelete(post._id)}
               >
                 Delete

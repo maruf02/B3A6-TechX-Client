@@ -4,17 +4,12 @@ import { useGetPostByUserIdQuery } from "@/Redux/api/baseApi";
 import Link from "next/link";
 
 const ShowPost = ({ userId }) => {
-  // Retrieve the token from local storage
-
-  // Fetch posts by userId using RTK Query
   const { data: posts, isLoading } = useGetPostByUserIdQuery(userId, {
-    skip: !userId, // Skip query if userId is not available
+    skip: !userId,
   });
 
-  // Display loading state
   if (isLoading) return <div>Loading...</div>;
 
-  // Handle case where no posts are available
   if (!posts || posts.length === 0) {
     return (
       <div className="text-4xl text-center py-10">
@@ -23,16 +18,7 @@ const ShowPost = ({ userId }) => {
     );
   }
 
-  // Reverse the posts array to show the latest post first
   const reversedPosts = posts.slice().reverse();
-
-  // Handler for content changes in Quill editor
-
-  // Handler for category selection
-
-  // Handler for type selection
-
-  // Delete Post handler
 
   return (
     <div className="mx-auto my-2 max-w-3xl mt-5">
@@ -45,7 +31,9 @@ const ShowPost = ({ userId }) => {
             <div className="flex items-center mb-4 p-4">
               <img
                 className="h-10 w-10 rounded-full"
-                src={post.userImage || "https://via.placeholder.com/150"}
+                src={
+                  post.userIdP.profileImage || "https://via.placeholder.com/150"
+                }
                 alt="User"
               />
               <div className="ml-3">

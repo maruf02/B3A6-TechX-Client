@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Cookies from "js-cookie"; // Import js-cookie to set tokens
+import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 import { Form, Input } from "antd";
 
@@ -9,7 +9,7 @@ import {
   useLoginUserMutation,
   useUpdatePasswordMutation,
 } from "@/Redux/api/baseApi";
-import Navbar from "@/components/Navbar/Navbar";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -55,15 +55,14 @@ const LoginPage = () => {
     try {
       const res = await loginUser(userInfo).unwrap();
       if (res?.data?.accessToken) {
-        // Set tokens in cookies
         Cookies.set("accessToken", res.data.accessToken, {
           secure: true,
-          httpOnly: false, // Client can read this cookie (adjust as needed)
+          httpOnly: false,
           sameSite: "strict",
         });
         Cookies.set("refreshToken", res.data.refreshToken, {
           secure: true,
-          httpOnly: false, // Client can read this cookie (adjust as needed)
+          httpOnly: false,
           sameSite: "strict",
         });
 

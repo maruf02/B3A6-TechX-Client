@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { useGetAllPostsQuery } from "@/Redux/api/baseApi"; // Replace with the correct import path
+import { useGetAllPostsQuery } from "@/Redux/api/baseApi";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 
@@ -8,32 +8,30 @@ import HomePostCreate from "./HomePostCreate";
 import SearchFilterOption from "./SearchFilterOption";
 
 const HomePage = () => {
-  const [page, setPage] = useState(1); // Initial page set to 1
-  const [posts, setPosts] = useState<any[]>([]); // State to store all posts
-  const [hasMore, setHasMore] = useState(true); // Keep track if there are more posts to load
+  const [page, setPage] = useState(1);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
 
-  const { data: fetchedPosts, isFetching, isError } = useGetAllPostsQuery(page); // Fetch posts based on current page
+  const { data: fetchedPosts, isFetching, isError } = useGetAllPostsQuery(page);
 
-  // Effect to append newly fetched posts to the existing posts
   useEffect(() => {
     if (fetchedPosts && fetchedPosts.length > 0) {
-      setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]); // Append new posts to the list
-      if (fetchedPosts.length < 10) setHasMore(false); // If fewer than 10 posts are fetched, stop loading
+      setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]);
+      if (fetchedPosts.length < 10) setHasMore(false);
     }
   }, [fetchedPosts]);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastPostElementRef = useRef<HTMLDivElement | null>(null);
 
-  // Effect to trigger the next page load when the last post comes into view
   useEffect(() => {
-    if (isFetching || !hasMore) return; // Don't observe if fetching or no more posts
+    if (isFetching || !hasMore) return;
 
     if (observer.current) observer.current.disconnect();
 
     const callback = (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting) {
-        setPage((prevPage) => prevPage + 1); // Increment the page to load next posts
+        setPage((prevPage) => prevPage + 1);
       }
     };
 
@@ -120,10 +118,8 @@ const HomePage = () => {
         </div>
       )}
 
-      {/* Reference to the last post element */}
       <div ref={lastPostElementRef} />
 
-      {/* No more posts message */}
       {!hasMore && <p className="text-center text-gray-500">No more posts</p>}
     </div>
   );

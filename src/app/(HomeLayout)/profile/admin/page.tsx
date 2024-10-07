@@ -1,18 +1,14 @@
 "use client";
-import { useState } from "react";
-import { Segmented } from "antd";
-import MyPost from "@/components/MyPost/MyPost";
-
-import Analytics from "@/components/Analytics/Analytics";
-import Payments from "@/components/Payments/Payments";
-import Followers from "@/components/Followers/Followers";
-
-import { jwtDecode } from "jwt-decode";
-
-import MyProfile from "@/components/MyProfile/MyProfile";
+import AllPosts from "@/components/Admin/AllPosts/AllPosts";
+import AllUsers from "@/components/Admin/AllUsers/AllUsers";
+import GraphSummary from "@/components/Admin/GraphSummary/GraphSummary";
+import PaymentHistory from "@/components/Admin/PaymentHistory/PaymentHistory";
 import { useGetUserByIdQuery } from "@/Redux/api/baseApi";
+import { Segmented } from "antd";
+import { jwtDecode } from "jwt-decode";
+import { useState } from "react";
 
-const UserProfilePage = () => {
+const AdminHomePage = () => {
   const [selectedOption, setSelectedOption] = useState<string>("Post");
   const token = localStorage.getItem("accessToken");
   const userName = token ? jwtDecode(token).name : null;
@@ -40,43 +36,32 @@ const UserProfilePage = () => {
       case "Post":
         return (
           <div>
-            <MyPost />
+            <AllPosts />
           </div>
         );
-      case "Profile":
+      case "Users":
         return (
           <div>
-            <MyProfile />
+            <AllUsers />
           </div>
         );
-      case "Analytics":
+      case "Payment":
         return (
           <div>
-            <Analytics />
+            <PaymentHistory />
           </div>
         );
-      case "Payments":
+      case "Summary":
         return (
           <div>
-            <Payments />
+            <GraphSummary />
           </div>
         );
-      case "Follow":
-        return (
-          <div>
-            <Followers />
-          </div>
-        );
-      // case "Following":
-      //   return (
-      //     <div>
-      //       <Following />
-      //     </div>
-      //   );
+
       default:
         return (
           <div>
-            <MyPost />
+            <AllPosts />
           </div>
         );
     }
@@ -114,9 +99,9 @@ const UserProfilePage = () => {
             <Segmented<string>
               options={[
                 "Post",
-                "Profile",
-                "Analytics",
-                "Payments",
+                "Users",
+                "Payment",
+                "Summary",
                 // "Follow",
                 // "Following",
               ]}
@@ -135,4 +120,4 @@ const UserProfilePage = () => {
   );
 };
 
-export default UserProfilePage;
+export default AdminHomePage;

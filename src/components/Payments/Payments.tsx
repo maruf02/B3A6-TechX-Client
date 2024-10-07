@@ -6,7 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import VerifyUser from "./VerifyUser";
+
 import { verifyPayment } from "./Isverify";
 
 const Payments = () => {
@@ -31,16 +31,15 @@ const Payments = () => {
 
   const handlePaymentSubmit = async () => {
     if (isVerify === "yes") {
-      // Show message if the payment is verified (already completed)
       Swal.fire("Payment Already Paid, Thanks!");
-      return; // Exit the function, no further action required
+      return;
     }
     try {
       const paymentData = {
         userIdP: userId,
         userId: userId,
-        amount: "20", // Make sure this is a number, not a string
-        paymentMethod: "credit_card", // example
+        amount: "20",
+        paymentMethod: "credit_card",
         status: "completed",
         date: getCurrentDate(),
         startTime: getCurrentDate(),
@@ -50,7 +49,6 @@ const Payments = () => {
 
       const res = await createPayment(paymentData).unwrap();
 
-      // Check if the response contains the expected payment_url
       if (res.data && res.data.payment_url) {
         window.location.href = res.data.payment_url;
         // Swal.fire(
@@ -72,11 +70,11 @@ const Payments = () => {
   };
 
   const openModal = () => {
-    setIsOpen(true); // Open modal
+    setIsOpen(true);
   };
 
   const closeModal = () => {
-    setIsOpen(false); // Close modal
+    setIsOpen(false);
   };
 
   return (

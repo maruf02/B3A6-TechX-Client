@@ -7,15 +7,14 @@ import {
   useGetPostByPostIdQuery,
   useLikePostMutation,
   usePostCommentMutation,
-  useUpdateCommentMutation, // New import for updating a comment
-  useDeleteCommentMutation, // New import for deleting a comment
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
 } from "@/Redux/api/baseApi";
 import Swal from "sweetalert2";
 
 const PostDetails = ({ params }) => {
   const postId = params.postDetails;
 
-  // Decode access token to get user info
   const token = localStorage.getItem("accessToken");
   let userId = null;
   let name = null;
@@ -26,12 +25,11 @@ const PostDetails = ({ params }) => {
     name = decodedToken.name;
   }
 
-  // Fetch post details
   const {
     data: post,
     error,
     isLoading,
-    refetch, // Destructure refetch function
+    refetch,
   } = useGetPostByPostIdQuery(postId, { skip: !postId });
 
   const {
@@ -42,20 +40,18 @@ const PostDetails = ({ params }) => {
   } = useGetCommentsByPostIdQuery(postId, { skip: !postId });
 
   const [commentText, setCommentText] = useState("");
-  const [editCommentId, setEditCommentId] = useState(null); // State to track which comment is being edited
-  const [editedCommentText, setEditedCommentText] = useState(""); // State to hold the edited comment text
+  const [editCommentId, setEditCommentId] = useState(null);
+  const [editedCommentText, setEditedCommentText] = useState("");
   const [postComment, { isLoading: isPosting }] = usePostCommentMutation();
-  const [updateComment] = useUpdateCommentMutation(); // Mutation hook for updating a comment
-  const [deleteComment] = useDeleteCommentMutation(); // Mutation hook for deleting a comment
+  const [updateComment] = useUpdateCommentMutation();
+  const [deleteComment] = useDeleteCommentMutation();
 
-  const [likePost] = useLikePostMutation(); // Mutation hook for liking a post
-  const [dislikePost] = useDislikePostMutation(); // Mutation hook for disliking a post
+  const [likePost] = useLikePostMutation();
+  const [dislikePost] = useDislikePostMutation();
 
-  // State to track if the post is liked or disliked
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
 
-  // Handle posting comment
   const handlePostComment = async () => {
     if (!commentText.trim()) return;
     const newComment = {
@@ -75,52 +71,48 @@ const PostDetails = ({ params }) => {
     }
   };
 
-  // Handle updating comment
   const handleUpdateComment = async (commentId) => {
     if (!editedCommentText.trim()) return;
     try {
       await updateComment({ commentId, comment: editedCommentText }).unwrap();
-      setEditCommentId(null); // Reset the edit state
-      setEditedCommentText(""); // Reset edited comment text
+      setEditCommentId(null);
+      setEditedCommentText("");
       Swal.fire("Comment updated successfully");
-      refetchComments(); // Refetch comments
+      refetchComments();
     } catch (error) {
       console.error("Failed to update comment:", error);
     }
   };
 
-  // Handle soft delete comment
   const handleDeleteComment = async (commentId) => {
     try {
       await deleteComment(commentId).unwrap();
       Swal.fire("Comment deleted successfully");
-      refetchComments(); // Refetch comments
+      refetchComments();
     } catch (error) {
       console.error("Failed to delete comment:", error);
     }
   };
 
-  // Handle like post
   const handleLikePost = async () => {
     try {
       await likePost({ postId, userId }).unwrap();
-      setIsLiked(true); // Set the post as liked
-      setIsDisliked(false); // Remove dislike if it was previously disliked
+      setIsLiked(true);
+      setIsDisliked(false);
       Swal.fire("Liked");
-      refetch(); // Refetch post data after liking
+      refetch();
     } catch (error) {
       console.error("Failed to like post:", error);
     }
   };
 
-  // Handle dislike post
   const handleDislikePost = async () => {
     try {
       await dislikePost({ postId, userId }).unwrap();
-      setIsDisliked(true); // Set the post as disliked
-      setIsLiked(false); // Remove like if it was previously liked
+      setIsDisliked(true);
+      setIsLiked(false);
       Swal.fire("Disliked");
-      refetch(); // Refetch post data after disliking
+      refetch();
     } catch (error) {
       console.error("Failed to dislike post:", error);
     }
@@ -230,8 +222,8 @@ const PostDetails = ({ params }) => {
                           <button
                             className="btn btn-secondary"
                             onClick={() => {
-                              setEditCommentId(null); // Cancel edit
-                              setEditedCommentText(""); // Clear text
+                              setEditCommentId(null);
+                              setEditedCommentText("");
                             }}
                           >
                             Cancel
@@ -240,24 +232,24 @@ const PostDetails = ({ params }) => {
                       ) : (
                         <div className="flex items-center justify-between">
                           <p>
-                            <span className="text-red-400">
-                              {comment.userIdP.name}
+                            <span className="text-blue-500 pr-2">
+                              {comment.userIdP.name}:
                             </span>
                             {comment.comment}
                           </p>
                           {comment.userId === userId && (
                             <div className="flex gap-2">
                               <button
-                                className="btn btn-secondary"
+                                className="btn btn-sm btn-secondary"
                                 onClick={() => {
-                                  setEditCommentId(comment._id); // Set comment to edit
-                                  setEditedCommentText(comment.comment); // Set current text to edit
+                                  setEditCommentId(comment._id);
+                                  setEditedCommentText(comment.comment);
                                 }}
                               >
                                 Edit
                               </button>
                               <button
-                                className="btn btn-danger"
+                                className="btn btn-sm btn-danger"
                                 onClick={() => handleDeleteComment(comment._id)}
                               >
                                 Delete

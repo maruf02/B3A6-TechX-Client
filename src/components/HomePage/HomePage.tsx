@@ -4,7 +4,7 @@ import {
   useFollowUserMutation,
   useGetAllPostsQuery,
   useGetPaymentByUserIdQuery,
-} from "@/Redux/api/baseApi"; // Replace with the correct import path
+} from "@/Redux/api/baseApi";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import HomePostCreate from "./HomePostCreate";
@@ -14,37 +14,36 @@ import { useRouter } from "next/navigation";
 import { message } from "antd";
 
 const HomePage = () => {
-  const [page, setPage] = useState(1); // Initial page set to 1
-  const [posts, setPosts] = useState<any[]>([]); // State to store all posts
-  const [hasMore, setHasMore] = useState(true); // Keep track if there are more posts to load
-  const [searchTerm, setSearchTerm] = useState(""); // State for search input
-  const [filteredPosts, setFilteredPosts] = useState<any[]>([]); // State to store filtered posts
-  const [selectedCategory, setSelectedCategory] = useState<string>(""); // State for selected category
-  const [sortOption, setSortOption] = useState<string>(""); // State for sorting option
+  const [page, setPage] = useState(1);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredPosts, setFilteredPosts] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [sortOption, setSortOption] = useState<string>("");
   const router = useRouter();
-  const { data: fetchedPosts, isFetching, isError } = useGetAllPostsQuery(page); // Fetch posts based on current page
+  const { data: fetchedPosts, isFetching, isError } = useGetAllPostsQuery(page);
   const [followUser] = useFollowUserMutation();
   const [followedUsers, setFollowedUsers] = useState<string[]>([]);
-  // Effect to append newly fetched posts to the existing posts
+
   useEffect(() => {
     if (fetchedPosts && fetchedPosts.length > 0) {
-      setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]); // Append new posts to the list
-      if (fetchedPosts.length < 10) setHasMore(false); // If fewer than 10 posts are fetched, stop loading
+      setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]);
+      if (fetchedPosts.length < 10) setHasMore(false);
     }
   }, [fetchedPosts]);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastPostElementRef = useRef<HTMLDivElement | null>(null);
 
-  // Effect to trigger the next page load when the last post comes into view
   useEffect(() => {
-    if (isFetching || !hasMore) return; // Don't observe if fetching or no more posts
+    if (isFetching || !hasMore) return;
 
     if (observer.current) observer.current.disconnect();
 
     const callback = (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting) {
-        setPage((prevPage) => prevPage + 1); // Increment the page to load next posts
+        setPage((prevPage) => prevPage + 1);
       }
     };
 
@@ -66,7 +65,7 @@ const HomePage = () => {
   });
 
   const payment = payments?.data || [];
-  // Effect to filter and sort posts based on search term, selected category, and sort option
+
   useEffect(() => {
     let filtered = posts;
 
@@ -82,19 +81,19 @@ const HomePage = () => {
 
     // Sort by most likes
     if (sortOption === "mostLikes") {
-      filtered = filtered.sort(
-        (a, b) => (b.likes?.length || 0) - (a.likes?.length || 0)
+      filtered = [...filtered].sort(
+        (a: any, b: any) => (b.likes?.length || 0) - (a.likes?.length || 0)
       );
     }
 
-    setFilteredPosts(filtered); // Set filtered posts
+    setFilteredPosts(filtered);
   }, [searchTerm, posts, selectedCategory, sortOption]);
 
   const handleReset = () => {
-    setSearchTerm(""); // Clear search term
-    setSelectedCategory(""); // Clear selected category
-    setSortOption(""); // Clear sort option
-    setFilteredPosts(posts); // Reset to show all posts
+    setSearchTerm("");
+    setSelectedCategory("");
+    setSortOption("");
+    setFilteredPosts(posts);
   };
   const isVerified = verifyPayment(payment.endTime);
   const handlePremium = (post: any) => {
@@ -145,8 +144,8 @@ const HomePage = () => {
     console.log("myUserId", myUserId);
     try {
       const response = await followUser({
-        userId: postUserID, // The user to follow
-        followerId: myUserId, // The current logged-in user
+        userId: postUserID,
+        followerId: myUserId,
       }).unwrap();
 
       message.success("Successfully followed the user!");
@@ -155,7 +154,6 @@ const HomePage = () => {
         postUserID,
       ]);
 
-      // Optionally, refetch the user data to update followers count
       // refetchUserData();
     } catch (error) {
       message.error("Failed to follow the user.");
@@ -175,7 +173,7 @@ const HomePage = () => {
             type="text"
             placeholder="Search posts..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} // Update search term
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="input input-bordered w-full mr-2"
           />
         </div>
@@ -213,7 +211,7 @@ const HomePage = () => {
       {/* Display posts */}
       {filteredPosts.map((post: any, index: number) => (
         <div
-          key={`${post._id}-${index}`} // Create a unique key using the post ID and index
+          key={`${post._id}-${index}`}
           className="card card-compact bg-gray-500 w-full shadow-xl mb-4"
         >
           <div className="flex justify-between">
@@ -289,10 +287,8 @@ const HomePage = () => {
         </div>
       )}
 
-      {/* Reference to the last post element */}
       <div ref={lastPostElementRef} />
 
-      {/* No more posts message */}
       {!hasMore && <p className="text-center text-gray-500">No more posts</p>}
     </div>
   );

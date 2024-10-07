@@ -1,12 +1,10 @@
-// src/redux/services/baseApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Define a service using a base URL and expected endpoints
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:5000/api",
-    credentials: "include", // include credentials (cookies)
+    credentials: "include",
   }),
   tagTypes: ["Auth", "Post"],
 
@@ -21,7 +19,7 @@ export const baseApi = createApi({
         method: "POST",
         body: userData,
       }),
-      invalidatesTags: ["Auth"], // Invalidate cache after login
+      invalidatesTags: ["Auth"],
     }),
 
     refreshToken: builder.mutation({
@@ -36,6 +34,28 @@ export const baseApi = createApi({
         url: `/auth/usersPass/${email}`,
         method: "PUT",
         body: { password },
+      }),
+    }),
+    GetAllUser: builder.query({
+      query: () => ({
+        url: "/auth/users",
+        method: "GET",
+      }),
+    }),
+
+    addUser: builder.mutation({
+      query: (userData) => ({
+        url: "/auth/signup",
+        method: "POST",
+        body: userData,
+      }),
+    }),
+
+    updateUser: builder.mutation({
+      query: ({ userId, userModifyData }) => ({
+        url: `/auth/usersInfo/${userId}`,
+        method: "PUT",
+        body: userModifyData,
       }),
     }),
     GetUserEmail: builder.query({
@@ -64,9 +84,12 @@ export const baseApi = createApi({
     getAllPostsMain: builder.query({
       query: () => "/posts",
     }),
+    getAllPayment: builder.query({
+      query: () => "/payments",
+    }),
 
     getAllPosts: builder.query({
-      query: ({ page, limit }) => `/posts?page=${page}&limit=${limit}`, // Support pagination
+      query: ({ page, limit }) => `/posts?page=${page}&limit=${limit}`,
     }),
 
     createPost: builder.mutation({
@@ -113,7 +136,7 @@ export const baseApi = createApi({
       }),
       invalidatesTags: (result, error, { postId }) => [
         { type: "Post", id: postId },
-      ], // Invalidate the specific post
+      ],
     }),
 
     dislikePost: builder.mutation({
@@ -124,7 +147,7 @@ export const baseApi = createApi({
       }),
       invalidatesTags: (result, error, { postId }) => [
         { type: "Post", id: postId },
-      ], // Invalidate the specific post
+      ],
     }),
 
     updateComment: builder.mutation({
@@ -150,7 +173,7 @@ export const baseApi = createApi({
     }),
 
     getPaymentByUserId: builder.query({
-      query: (userId: string) => `/payments/user/${userId}`, // Adjust the endpoint if needed
+      query: (userId: string) => `/payments/user/${userId}`,
     }),
     getUserById: builder.query({
       query: (userId) => `/auth/usersId/${userId}`,
@@ -160,7 +183,7 @@ export const baseApi = createApi({
       query: (userId) => `/posts/user/${userId}`,
     }),
     getPostByPostId: builder.query({
-      query: (id) => `/posts/${id}`, // Adjust this to use the post ID
+      query: (id) => `/posts/${id}`,
     }),
     getCommentsByPostId: builder.query({
       query: (postId) => `comments/${postId}`,
@@ -172,7 +195,10 @@ export const {
   useGetAllCarsQuery,
   useLoginUserMutation,
   useUpdatePasswordMutation,
+  useAddUserMutation,
+  useUpdateUserMutation,
   useGetUserEmailQuery,
+  useGetAllUserQuery,
   useUpdateUserByIdMutation,
   useRegisterUserMutation,
   useRefreshTokenMutation,
@@ -190,6 +216,7 @@ export const {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   useGetUserByIdQuery,
+  useGetAllPaymentQuery,
   useCreatePaymentMutation,
   useGetPaymentByUserIdQuery,
   useFollowUserMutation,

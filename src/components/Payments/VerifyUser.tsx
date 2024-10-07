@@ -1,5 +1,5 @@
 import { useGetPaymentByUserIdQuery } from "@/Redux/api/baseApi";
-import { jwtDecode } from "jwt-decode"; // Correct import for jwt-decode
+import { jwtDecode } from "jwt-decode";
 
 import React from "react";
 import { verifyPayment } from "./Isverify";
@@ -13,11 +13,10 @@ const VerifyUser = () => {
   });
   const payment = payments?.data || [];
 
-  // Compare the dates
   const isVerify = verifyPayment(payment.endTime);
 
   console.log(payment.endTime);
-  // verify payment
+
   return (
     <div>
       <h1>Verify User?</h1>

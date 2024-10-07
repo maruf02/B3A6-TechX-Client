@@ -27,13 +27,11 @@ const SignUpPage = () => {
     registerUser(userInfo)
       .unwrap()
       .then((res) => {
-        // Handle successful signup, e.g., redirect or show success message
         console.log("Success:", res);
         Swal.fire(res.message);
         router.push("/login");
       })
       .catch((error) => {
-        // Handle errors
         console.log("Error:", error);
         if (error.data.message.includes("E11000 duplicate key")) {
           Swal.fire("Already Register, Please signIN");

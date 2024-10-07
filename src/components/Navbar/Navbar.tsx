@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -10,6 +11,7 @@ const Navbar = () => {
   // const accessToken =
   //   Cookies.get("accessToken") || localStorage.getItem("accessToken");
   const accessToken = localStorage.getItem("accessToken");
+  const role = accessToken ? jwtDecode(accessToken).role : null;
   useEffect(() => {
     // Check if the access token exists in cookies or localStorage
 
@@ -48,17 +50,17 @@ const Navbar = () => {
           <button>Contact</button>
         </Link>
       </li>
-      <li>
+      {/* <li>
         <Link href="/profile/user" className="activeNavLink">
           <button>profile</button>
         </Link>
-      </li>
+      </li> */}
 
-      {/* <li>
-          <Link href={`/profile/${role}`} className="activeNavLink">
-            <button>Profile</button>
-          </Link>
-        </li> */}
+      <li>
+        <Link href={`/profile/${role}`} className="activeNavLink">
+          <button>Profile</button>
+        </Link>
+      </li>
     </>
   );
   return (

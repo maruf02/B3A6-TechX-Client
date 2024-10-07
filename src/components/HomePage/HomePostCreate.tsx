@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Button, Modal, Select, Space, Spin } from "antd"; // Import Spin for loading spinner
+import { Button, Modal, Select, Space, Spin } from "antd";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Quill editor styles
+import "react-quill/dist/quill.snow.css";
 import {
   useCreatePostMutation,
   useGetPostByUserIdQuery,
@@ -10,46 +10,40 @@ import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 
 const HomePostCreate = () => {
-  const [editorContent, setEditorContent] = useState(""); // Editor content state
-  const [category, setCategory] = useState(""); // Category state
-  const [type, setType] = useState(""); // Type state
-  const [file, setFile] = useState<File | null>(null); // File state
-  const [loading, setLoading] = useState(false); // Loading state for button
+  const [editorContent, setEditorContent] = useState("");
+  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
   const [createPost] = useCreatePostMutation();
 
-  // Fetch user posts
   const token = localStorage.getItem("accessToken");
   const userId = token ? jwtDecode(token)._id : null;
 
   const { refetch } = useGetPostByUserIdQuery(userId, {
-    skip: !userId, // Skip the query if userId is not available
+    skip: !userId,
   });
 
-  // Handler for content changes in Quill editor
   const handleEditorChange = (content: string) => {
-    setEditorContent(content); // Save content in state
+    setEditorContent(content);
   };
 
-  // Handler for category selection
   const handleCategoryChange = (value: string) => {
-    setCategory(value); // Update category state
+    setCategory(value);
   };
 
-  // Handler for type selection
   const handleTypeChange = (value: string) => {
-    setType(value); // Update type state
+    setType(value);
   };
 
-  // Handler for file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setFile(event.target.files[0]); // Save the selected file
+      setFile(event.target.files[0]);
     }
   };
 
-  // Function to get the userId and name from the token stored in localStorage
   const getUserDataFromToken = () => {
-    const token = localStorage.getItem("accessToken"); // Get token from localStorage
+    const token = localStorage.getItem("accessToken");
     if (token) {
       const decodedToken: any = jwtDecode(token);
       return {
@@ -61,13 +55,12 @@ const HomePostCreate = () => {
     return null;
   };
 
-  // Function to handle image upload to Cloudinary
   const uploadImageToCloudinary = async () => {
-    if (!file) return null; // No file selected
+    if (!file) return null;
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "frontend_preset"); // Your Cloudinary upload preset
+    formData.append("upload_preset", "frontend_preset");
 
     try {
       const response = await fetch(
@@ -78,14 +71,13 @@ const HomePostCreate = () => {
         }
       );
       const data = await response.json();
-      return data.secure_url; // Return the image URL
+      return data.secure_url;
     } catch (error) {
       console.error("Error uploading image:", error);
-      return null; // Return null if upload fails
+      return null;
     }
   };
 
-  // Validation function
   const validateFields = () => {
     if (!editorContent.trim()) {
       Swal.fire("Editor content is required!");
@@ -106,35 +98,33 @@ const HomePostCreate = () => {
     return true;
   };
 
-  // Handler for submit button
   const handleSubmit = async () => {
-    const userData = getUserDataFromToken(); // Get userId and name from token
+    const userData = getUserDataFromToken();
     if (!userData) {
       console.error("User is not authenticated");
       return;
     }
 
-    // Validate form fields
     if (!validateFields()) {
-      return; // Stop the submission if validation fails
+      return;
     }
 
-    setLoading(true); // Start loading
+    setLoading(true);
 
-    let imageUrl = ""; // Placeholder for image URL
+    let imageUrl = "";
     if (file) {
-      imageUrl = await uploadImageToCloudinary(); // Upload image if selected
+      imageUrl = await uploadImageToCloudinary();
     }
 
     const postData = {
       userId: userData.userId,
-      userIdP: userData.userId, // Set the userId dynamically
-      name: userData.name, // Set the name dynamically
-      email: userData.email, // Set the email dynamically
+      userIdP: userData.userId,
+      name: userData.name,
+      email: userData.email,
       post: editorContent,
       category: category,
       type: type || "Free",
-      images: imageUrl || "", // Use uploaded image URL or a default value
+      images: imageUrl || "",
       likes: [],
       comment: [],
     };
@@ -144,30 +134,27 @@ const HomePostCreate = () => {
       console.log("Post created successfully", result);
       Swal.fire("Post created successfully");
 
-      // Refetch the posts after creation
-      refetch(); // Refetch the posts
-
-      setLoading(false); // Stop loading
-      setOpen(false); // Close modal after submitting
+      refetch();
+      setLoading(false);
+      setOpen(false);
     } catch (error) {
       console.error("Failed to create post:", error);
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
-  // Modal option
   const [open, setOpen] = useState(false);
 
   const showModal = () => {
-    setOpen(true); // Open modal
+    setOpen(true);
   };
 
   const handleOk = () => {
-    handleSubmit(); // Trigger submit on modal confirm
+    handleSubmit();
   };
 
   const handleCancel = () => {
-    setOpen(false); // Close modal
+    setOpen(false);
   };
 
   return (
@@ -191,30 +178,28 @@ const HomePostCreate = () => {
       <Modal
         title="Create New Post"
         open={open}
-        onOk={handleOk} // Trigger handleOk on modal confirm
-        onCancel={handleCancel} // Handle modal close
+        onOk={handleOk}
+        onCancel={handleCancel}
         okText="Submit"
         cancelText="Cancel"
-        width={1000} // Adjust modal width as needed
+        width={1000}
       >
         {loading ? (
           <div className="flex justify-center items-center">
-            <Spin size="large" /> {/* Show spinner during loading */}
+            <Spin size="large" />
           </div>
         ) : (
           <>
             {/* Quill Editor */}
             <ReactQuill
-              theme="snow" // Using the 'snow' theme
-              value={editorContent} // Binding content to state
-              onChange={handleEditorChange} // Handling changes
-              className="bg-white border rounded-md min-h-32 w-full" // Styling for the editor
-              placeholder="Write something about yourself..." // Placeholder
+              theme="snow"
+              value={editorContent}
+              onChange={handleEditorChange}
+              className="bg-white border rounded-md min-h-32 w-full"
+              placeholder="Write something about yourself..."
             />
 
-            {/* Options and Upload */}
             <div className="flex gap-5 border w-full h-16 mt-2">
-              {/* Category Select */}
               <div className="flex gap-1 items-center">
                 <h1>Select Category</h1>
                 <Space wrap>
@@ -253,15 +238,13 @@ const HomePostCreate = () => {
                 <input
                   type="file"
                   className="file-input w-full max-w-xs items-center bg-transparent"
-                  onChange={handleFileChange} // Handle file change
+                  onChange={handleFileChange}
                 />
               </div>
             </div>
           </>
         )}
       </Modal>
-
-      {/* for showing all post */}
     </div>
   );
 };

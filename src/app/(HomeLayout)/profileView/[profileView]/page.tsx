@@ -16,7 +16,7 @@ import { VscVerifiedFilled } from "react-icons/vsc";
 
 const ProfileViewPage = ({ params }) => {
   const [selectedOption, setSelectedOption] = useState<string>("Post");
-  const [isFollowing, setIsFollowing] = useState<boolean>(false); // New state for button text
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
   const userId = params.profileView;
   console.log("userId", userId);
@@ -60,10 +60,8 @@ const ProfileViewPage = ({ params }) => {
 
       message.success("Successfully followed the user!");
 
-      // Optionally, refetch the user data to update followers count
       refetchUserData();
 
-      // Set the state to indicate the user has followed
       setIsFollowing(true);
     } catch (error) {
       message.error("Failed to follow the user.");
@@ -87,33 +85,33 @@ const ProfileViewPage = ({ params }) => {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="w-full h-full min-h-screen border border-2 border-red-600">
+      <div className="w-full h-full min-h-screen  ">
         {/* cover image */}
-        <div className="w-full h-96 border border-2 border-green-600">
+        <div className="w-full h-96  rounded-2xl ">
           <img
             src={
               userData?.data?.coverImage ||
               "https://images.pexels.com/photos/751005/pexels-photo-751005.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             }
             alt=""
-            className="w-full h-full"
+            className="w-full h-full rounded-2xl"
           />
         </div>
         {/* profile image */}
-        <div className="w-60 h-60 rounded-2xl border border-2 border-blue-600 relative -top-28 left-10">
+        <div className="w-60 h-60 rounded-2xl   relative -top-28 left-10">
           <img
             src={
               userData?.data?.profileImage ||
               "https://images.pexels.com/photos/751005/pexels-photo-751005.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             }
             alt=""
-            className="w-full h-full"
+            className="w-full h-full rounded-2xl"
           />
         </div>
         {/* different option */}
-        <div className="w-full lg:w-4/12 h-28 border border-2 border-green-600 relative lg:left-[24%] -top-24 lg:-top-56">
+        <div className="w-full lg:w-4/12 h-28  relative lg:left-[24%] -top-24 lg:-top-56">
           <div className="flex justify-between">
-            <div className="text-4xl font-bold px-10 border border-2 border-blue-600 h-1/2">
+            <div className="flex text-4xl font-bold pb-4   h-1/2">
               {userData?.data?.name}{" "}
               <span>
                 {isVerify === "yes" ? (
@@ -126,23 +124,21 @@ const ProfileViewPage = ({ params }) => {
               </span>
             </div>
             <div>
-              <button onClick={handleFollow} className="btn btn-primary">
-                {isFollowing ? "Followed" : "Follow"} {/* Update button text */}
+              <button onClick={handleFollow} className="btn btn-sm btn-primary">
+                {isFollowing ? "Followed" : "Follow"}
               </button>
             </div>
           </div>
-          <div className="border border-2 border-blue-600 h-1/2">
+          <div className="  text-center md:text-left h-1/2">
             <Segmented<string>
-              options={["Post", "Profile", "Followers", "Following"]}
+              options={["Post", "Profile"]}
               value={selectedOption}
               onChange={(value) => setSelectedOption(value)}
             />
           </div>
         </div>
-        <div className="flex flex-col lg:flex-row w-full h-screen border border-2 border-green-600 relative lg:-top-40">
-          <div className="w-full border border-2 border-blue-600 p-4">
-            {renderContent()}
-          </div>
+        <div className="flex flex-col lg:flex-row w-full h-screen   relative lg:-top-40">
+          <div className="w-full   p-4">{renderContent()}</div>
         </div>
       </div>
     </div>

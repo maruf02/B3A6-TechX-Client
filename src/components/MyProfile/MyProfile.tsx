@@ -51,10 +51,10 @@ const MyProfile = () => {
   const handleImageUpload = async () => {
     const profileImageUrl = profileImageFile
       ? await uploadImageToCloudinary(profileImageFile)
-      : userData?.data?.profileImage; // Use existing image if none is uploaded
+      : userData?.data?.profileImage;
     const coverImageUrl = coverImageFile
       ? await uploadImageToCloudinary(coverImageFile)
-      : userData?.data?.coverImage; // Use existing image if none is uploaded
+      : userData?.data?.coverImage;
     return { profileImageUrl, coverImageUrl };
   };
 
@@ -70,11 +70,11 @@ const MyProfile = () => {
     };
 
     console.log("Updated User Data:", newUserData);
-    // Perform the update
+
     await updateUserById({ id: userId, updatedUser: newUserData }).unwrap();
     refetch();
     closeModal();
-    Swal.fire("updated"); // Close the modal after the update
+    Swal.fire("updated");
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -85,14 +85,21 @@ const MyProfile = () => {
       <div className="card card-compact text-white bg-gray-400 max-w-2xl shadow-xl mx-auto">
         <div className="card-body">
           <h2 className="card-title">
-            {userData?.data?.name || "Name not available"}
+            Name: {userData?.data?.name || "Name not available"}
           </h2>
           <h2 className="card-title">
-            {userData?.data?.email || "Email not available"}
+            Email: {userData?.data?.email || "Email not available"}
           </h2>
           <h2 className="card-title">
-            {userData?.data?.phone || "Phone not available"}
+            Phone: {userData?.data?.phone || "Phone not available"}
           </h2>
+          <h2 className="card-title">
+            Total Followers: {userData?.data?.follower?.length || 0}
+          </h2>
+          <h1 className="card-title">
+            Total Following: {userData?.data?.following?.length || 0}
+          </h1>
+
           <img
             src={
               userData?.data?.profileImage || "https://via.placeholder.com/150"
