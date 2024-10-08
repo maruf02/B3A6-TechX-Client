@@ -1,8 +1,10 @@
 "use client";
 
 import { useGetUserByIdQuery } from "@/Redux/api/baseApi";
-
-const ProfileViewProfile = ({ userId }) => {
+interface ProfilePostProps {
+  userId: string; // or 'string | null' if it can also be null
+}
+const ProfileViewProfile: React.FC<ProfilePostProps> = ({ userId }) => {
   const {
     data: userData,
     error,

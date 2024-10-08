@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { Button, Modal, Select, Space, Spin } from "antd";
-import ReactQuill from "react-quill";
+import dynamic from "next/dynamic"; // Import dynamic from Next.js
 import "react-quill/dist/quill.snow.css";
 import {
   useCreatePostMutation,
@@ -8,7 +9,11 @@ import {
 } from "@/Redux/api/baseApi";
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
+import { TLoginUser } from "@/types";
 import ShowPost from "./ShowPost";
+
+// Dynamically import ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const MyPost = () => {
   const [editorContent, setEditorContent] = useState("");
@@ -17,9 +22,17 @@ const MyPost = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [createPost] = useCreatePostMutation();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
-  const token = localStorage.getItem("accessToken");
-  const userId = token ? jwtDecode(token)._id : null;
+  // Use useEffect to run client-side code
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const decodedToken = jwtDecode<TLoginUser>(token);
+      setUserId(decodedToken._id);
+    }
+  }, []);
 
   const { refetch } = useGetPostByUserIdQuery(userId, {
     skip: !userId,
@@ -46,7 +59,7 @@ const MyPost = () => {
   const getUserDataFromToken = () => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      const decodedToken: any = jwtDecode(token);
+      const decodedToken = jwtDecode<TLoginUser>(token);
       return {
         userId: decodedToken._id,
         name: decodedToken.name,
@@ -136,7 +149,6 @@ const MyPost = () => {
       Swal.fire("Post created successfully");
 
       refetch();
-
       setLoading(false);
       setOpen(false);
     } catch (error) {
@@ -144,9 +156,6 @@ const MyPost = () => {
       setLoading(false);
     }
   };
-
-  // Modal option
-  const [open, setOpen] = useState(false);
 
   const showModal = () => {
     setOpen(true);
@@ -162,12 +171,7 @@ const MyPost = () => {
 
   return (
     <div>
-      {/* <h1 className="text-4xl underline text-center py-5">
-        Create your Blog Post
-      </h1> */}
-
-      {/* Button to open modal */}
-      <div className="w-full lg:w-2/4 mx-auto mb-4">
+      <div className="w-2/4 mx-auto mb-4">
         <Button
           type="primary"
           onClick={showModal}
@@ -177,7 +181,6 @@ const MyPost = () => {
         </Button>
       </div>
 
-      {/* Modal section */}
       <Modal
         title="Create New Post"
         open={open}
@@ -193,7 +196,6 @@ const MyPost = () => {
           </div>
         ) : (
           <>
-            {/* Quill Editor */}
             <ReactQuill
               theme="snow"
               value={editorContent}
@@ -202,7 +204,7 @@ const MyPost = () => {
               placeholder="Write something about yourself..."
             />
 
-            <div className="flex flex-col lg:flex-row gap-5  w-full h-36 lg:h-16 mt-2">
+            <div className="flex gap-5 border w-full h-16 mt-2">
               <div className="flex gap-1 items-center">
                 <h1>Select Category</h1>
                 <Space wrap>
@@ -220,7 +222,6 @@ const MyPost = () => {
                 </Space>
               </div>
 
-              {/* Type Select */}
               <div className="flex gap-1 items-center">
                 <h1>Select Type</h1>
                 <Space wrap>
@@ -236,7 +237,6 @@ const MyPost = () => {
                 </Space>
               </div>
 
-              {/* Upload Portion */}
               <div className="flex items-center">
                 <input
                   type="file"
@@ -248,7 +248,6 @@ const MyPost = () => {
           </>
         )}
       </Modal>
-
       <div>
         <ShowPost />
       </div>

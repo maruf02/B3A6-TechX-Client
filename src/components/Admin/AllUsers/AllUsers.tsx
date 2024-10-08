@@ -10,10 +10,11 @@ import {
   useGetAllUserQuery,
   useUpdateUserMutation,
 } from "@/Redux/api/baseApi";
+import { TUser } from "@/types";
 
 const UserManagement = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedBlock, setSelectedBlock] = useState("");
 
@@ -21,6 +22,7 @@ const UserManagement = () => {
   const { data: user, refetch } = useGetAllUserQuery(undefined);
   const [addUser] = useAddUserMutation();
   const [updateUser] = useUpdateUserMutation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // const [deleteCar] = useDeleteCarMutation();
 
   const users = user?.data || [];
@@ -67,32 +69,20 @@ const UserManagement = () => {
         timer: 1500,
       });
 
-      const modal = document.getElementById(
-        "AddProductModal"
-      ) as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
+      setIsModalOpen(false);
       refetch();
-    } catch (error) {
+    } catch {
       // console.error("Failed to add product:", error);
     }
   };
 
   const handleEditUser = (userId: string) => {
-    const user = users.find((p: any) => p._id === userId);
+    const user = users.find((p: TUser) => p._id === userId);
     if (user) {
       setSelectedUserId(userId);
       setSelectedUser(user);
       setSelectedRole(user.role);
       setSelectedBlock(user.isBlock);
-
-      const modal = document.getElementById(
-        "editProductModal"
-      ) as HTMLDialogElement;
-      if (modal) {
-        modal.showModal();
-      }
     }
   };
 
@@ -140,14 +130,9 @@ const UserManagement = () => {
         timer: 1500,
       });
 
-      const modal = document.getElementById(
-        "editProductModal"
-      ) as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
+      setIsModalOpen(false);
       refetch();
-    } catch (error) {
+    } catch {
       // console.error("Failed to update product:", error);
     }
   };
@@ -168,14 +153,7 @@ const UserManagement = () => {
         <h2 className="text-2xl text-black font-semibold">User Management</h2>
 
         <button
-          onClick={() => {
-            const modal = document.getElementById(
-              "AddProductModal"
-            ) as HTMLDialogElement;
-            if (modal) {
-              modal.showModal();
-            }
-          }}
+          onClick={() => setIsModalOpen(true)}
           className="flex text-white btn bg-[#1A4870] hover:bg-[#5B99C2] btn-md justify-between  "
         >
           <span>
@@ -183,72 +161,56 @@ const UserManagement = () => {
           </span>
           <span>Add User</span>
         </button>
-        <dialog id="AddProductModal" className="modal  ">
-          <div className="modal-box bg-[#1A4870]  ">
-            <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                ✕
-              </button>
-            </form>
-            {/* add car form */}
-            <form onSubmit={handleAddUser}>
-              <div className="flex justify-center pt-5 ">
-                <h1 className="text-white text-3xl ">Add New User</h1>
-              </div>
-              <p className="border border-1 border-gray-400 my-3 "></p>
-              <div className="flex flex-col gap-2">
-                <div>
-                  <label className="pr-16 text-white">Name:</label>
+        {/* <dialog id="AddProductModal" className="modal  "> */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-gray-400 text-black p-6 rounded-lg w-full max-w-lg">
+              <form onSubmit={handleAddUser}>
+                <div className="flex justify-between">
+                  <h2 className="text-2xl font-bold">Add New User</h2>
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="text-black hover:text-gray-900"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="my-4 text-black">
+                  <label className="block mb-1">Name:</label>
                   <input
                     type="text"
                     name="nameT"
                     required
+                    className="w-full p-2 border rounded bg-transparent text-black"
                     placeholder="Enter user name"
-                    className="input input-bordered input-primary w-full max-w-60 bg-inherit text-white"
                   />
                 </div>
-                <div>
-                  <label className="pr-16 text-white"> Email:</label>
+                <div className="my-4">
+                  <label className="block mb-1">Email:</label>
                   <input
                     type="email"
-                    required
                     name="email"
-                    placeholder="Enter user email  "
-                    className="input input-bordered input-primary w-full max-w-60 bg-inherit text-white"
+                    required
+                    className="w-full p-2 border rounded bg-transparent text-black"
+                    placeholder="Enter user email"
                   />
-                  <label className="pr-16 text-white py-3">
-                    Password:{" "}
-                    <span className="pl-10 text-white text-xl font-bold">
-                      [password1234 (default)]
-                    </span>
-                  </label>
                 </div>
-                {/* <div>
-                  <label className="pr-3 text-white">Image(Optional):</label>
+                <div className="my-4">
+                  <label className="block mb-1">Phone:</label>
                   <input
-                    type="text"
-                    name="image"
-                    placeholder="Enter image Link (Link only)"
-                    className="input input-bordered input-primary w-full max-w-60 bg-inherit text-white"
-                  />
-                </div> */}
-                <div>
-                  <label className="pr-16 text-white">Phone: </label>
-                  <input
-                    type="number"
+                    type="tel"
                     name="phone"
-                    placeholder="Enter user phone number"
-                    className="input input-bordered input-primary w-full max-w-60 bg-inherit text-white"
+                    className="w-full p-2 border rounded bg-transparent text-black"
+                    placeholder="Enter user phone"
                   />
                 </div>
-
-                <div>
-                  <label className="pr-16 text-white">Role:</label>
+                <div className="my-4">
+                  <label className="block mb-1">Role:</label>
                   <select
                     onChange={handleSelectChangeRole}
-                    value={selectedRole || ""}
+                    value={selectedRole}
                     required
-                    className="select select-bordered w-full max-w-60 bg-[#1A4870] text-white"
+                    className="w-full p-2 border rounded bg-transparent text-black"
                   >
                     <option value="" disabled>
                       Select Role
@@ -260,13 +222,13 @@ const UserManagement = () => {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="pr-10 text-white">IsBlock?:</label>
+                <div className="my-4">
+                  <label className="block mb-1">Is Blocked?</label>
                   <select
                     onChange={handleSelectChangeIsBlock}
-                    value={selectedBlock || ""}
+                    value={selectedBlock}
                     required
-                    className="select select-bordered w-full max-w-60 bg-[#1A4870] text-white"
+                    className="w-full p-2 border rounded bg-transparent text-black"
                   >
                     <option value="" disabled>
                       Select Block Status
@@ -278,69 +240,78 @@ const UserManagement = () => {
                     ))}
                   </select>
                 </div>
-
-                <div className="flex flex-row align-middle">
-                  <label className="pr-6  text-white">Address:</label>
+                <div className="my-4">
+                  <label className="block mb-1">Address:</label>
                   <textarea
                     name="address"
                     required
-                    className="textarea textarea-bordered w-full max-w-sm bg-[#1A4870] text-white"
-                    placeholder="address"
-                  ></textarea>
+                    className="w-full p-2 border rounded bg-transparent text-black"
+                    placeholder="Enter user address"
+                  />
                 </div>
-                <div className="flex justify-center my-5  ">
-                  <button className="flex text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-full text-2xl pb-1 ">
-                    Save
+                <div className="flex justify-end mt-4">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Save User
                   </button>
                 </div>
-              </div>
-            </form>
-            {/* add car form */}
+              </form>
+            </div>
           </div>
-        </dialog>
+        )}
+        {/* </dialog> */}
+
         {/* edit modal */}
-        <dialog id="editProductModal" className="modal">
-          <div className="modal-box bg-[#1A4870]">
-            <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                ✕
-              </button>
-            </form>
-            <form onSubmit={handleEditFormSubmit}>
-              <div className="flex justify-center pt-5 ">
-                <h1 className="text-white text-3xl ">
-                  {selectedUserId ? "Edit User" : "Add New User"}
-                </h1>
-              </div>
-              <p className="border border-1 border-gray-400 my-3 "></p>
-              <div className="flex flex-col gap-2">
-                {selectedUserId && (
-                  <div className="text-white text-center mb-4">
-                    <p>User ID: {selectedUserId}</p>
+        {/* edit modal */}
+        {selectedUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-gray-400 text-black p-6 rounded-lg w-full max-w-lg">
+              <form onSubmit={handleEditFormSubmit}>
+                <div className="flex justify-between">
+                  <div className="flex justify-center pt-5 ">
+                    <h1 className="text-white text-3xl ">
+                      {selectedUserId ? "Edit User" : "Add New User"}
+                    </h1>
                   </div>
-                )}
-                <div>
-                  <label className="pr-16 text-white">Name:</label>
-                  <input
-                    type="text"
-                    name="nameT"
-                    defaultValue={selectedUser?.name}
-                    placeholder="Enter user name"
-                    className="input input-bordered input-primary w-full max-w-xs bg-inherit text-white"
-                  />
+                  <button
+                    onClick={() => setSelectedUser(null)}
+                    className="text-black hover:text-gray-900"
+                  >
+                    ✕
+                  </button>
                 </div>
-                <div>
-                  <label className="pr-16 text-white">Email:</label>
-                  <input
-                    type="text"
-                    readOnly
-                    defaultValue={selectedUser?.email}
-                    name="email"
-                    placeholder="Enter user email"
-                    className="input input-bordered input-primary w-full max-w-xs bg-inherit text-white"
-                  />
-                </div>
-                {/* <div>
+
+                <p className="border border-1 border-gray-400 my-3 "></p>
+                <div className="flex flex-col gap-2">
+                  {selectedUserId && (
+                    <div className="text-white text-center mb-4">
+                      <p>User ID: {selectedUserId}</p>
+                    </div>
+                  )}
+                  <div>
+                    <label className="pr-16 text-white">Name:</label>
+                    <input
+                      type="text"
+                      name="nameT"
+                      defaultValue={selectedUser?.name}
+                      placeholder="Enter user name"
+                      className="input input-bordered input-primary w-full max-w-xs bg-[#1A4870] text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="pr-16 text-white">Email:</label>
+                    <input
+                      type="text"
+                      readOnly
+                      defaultValue={selectedUser?.email}
+                      name="email"
+                      placeholder="Enter user email"
+                      className="input input-bordered input-primary w-full max-w-xs bg-[#1A4870] text-white"
+                    />
+                  </div>
+                  {/* <div>
                   <label className="pr-3 text-white">Image(Optional):</label>
                   <input
                     type="text"
@@ -350,70 +321,72 @@ const UserManagement = () => {
                     className="input input-bordered input-primary w-full max-w-60 bg-inherit text-white"
                   />
                 </div> */}
-                <div>
-                  <label className="pr-16 text-white">Phone:</label>
-                  <input
-                    type="number"
-                    defaultValue={selectedUser?.phone}
-                    name="phone"
-                    placeholder="Enter user phone number"
-                    className="input input-bordered input-primary w-full max-w-xs bg-inherit text-white"
-                  />
-                </div>
-                <div>
-                  <label className="pr-16 text-white">Role:</label>
-                  <select
-                    onChange={handleSelectChangeRole}
-                    value={selectedRole || selectedUser?.role || ""}
-                    className="select select-bordered w-full max-w-xs bg-[#1A4870] text-white"
-                  >
-                    <option value="" disabled>
-                      Select Role
-                    </option>
-                    {roles.map((role, index) => (
-                      <option key={index} value={role}>
-                        {role}
+                  <div>
+                    <label className="pr-16 text-white">Phone:</label>
+                    <input
+                      type="number"
+                      defaultValue={selectedUser?.phone}
+                      name="phone"
+                      placeholder="Enter user phone number"
+                      className="input input-bordered input-primary w-full max-w-xs bg-[#1A4870] text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="pr-16 text-white">Role:</label>
+                    <select
+                      onChange={handleSelectChangeRole}
+                      value={selectedRole || selectedUser?.role || ""}
+                      className="select select-bordered w-full max-w-xs bg-[#1A4870] text-white"
+                    >
+                      <option value="" disabled>
+                        Select Role
                       </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="pr-10 text-white">IsBlock?:</label>
-                  <select
-                    onChange={handleSelectChangeIsBlock}
-                    value={selectedBlock || selectedUser?.isBlock || ""}
-                    // defaultValue={selectedCar?.color}
-                    className="select select-bordered w-full max-w-xs bg-[#1A4870] text-white"
-                  >
-                    <option value="" disabled>
-                      Select Block Status
-                    </option>
-                    {isBlocks.map((color, index) => (
-                      <option key={index} value={color}>
-                        {color}
+                      {roles.map((role, index) => (
+                        <option key={index} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="pr-10 text-white">IsBlock?:</label>
+                    <select
+                      onChange={handleSelectChangeIsBlock}
+                      value={selectedBlock || selectedUser?.isBlock || ""}
+                      // defaultValue={selectedCar?.color}
+                      className="select select-bordered w-full max-w-xs bg-[#1A4870] text-white"
+                    >
+                      <option value="" disabled>
+                        Select Block Status
                       </option>
-                    ))}
-                  </select>
-                </div>
+                      {isBlocks.map((color, index) => (
+                        <option key={index} value={color}>
+                          {color}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <div className="flex flex-row align-middle">
-                  <label className="pr-12  text-white">Address:</label>
-                  <textarea
-                    name="address"
-                    defaultValue={selectedUser?.address}
-                    className="textarea textarea-bordered w-full max-w-xs bg-[#1A4870] text-white"
-                    placeholder="address"
-                  ></textarea>
+                  <div className="flex flex-row align-middle">
+                    <label className="pr-12  text-white">Address:</label>
+                    <textarea
+                      name="address"
+                      defaultValue={selectedUser?.address}
+                      className="textarea textarea-bordered w-full max-w-xs bg-[#1A4870] text-white"
+                      placeholder="address"
+                    ></textarea>
+                  </div>
+                  <div className="flex justify-center my-5  ">
+                    <button className="flex text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-full text-2xl pb-1 ">
+                      Edit
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-center my-5  ">
-                  <button className="flex text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-full text-2xl pb-1 ">
-                    Edit
-                  </button>
-                </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
-        </dialog>
+        )}
+        {/* edit modal */}
         {/* edit modal */}
       </div>
       {/* table view */}
@@ -435,7 +408,7 @@ const UserManagement = () => {
             {users.length === 0 ? (
               <div>sorry</div>
             ) : (
-              users.map((user: any) => (
+              users.map((user: TUser) => (
                 <>
                   <tr key={user._id} className="hover:bg-gray-300">
                     <td>

@@ -2,6 +2,7 @@ import {
   useGetAllPostsMainQuery,
   useDeletePostByIdMutation,
 } from "@/Redux/api/baseApi";
+import { TPost } from "@/types";
 import { message } from "antd";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -14,19 +15,19 @@ const AllPosts = () => {
     refetch,
   } = useGetAllPostsMainQuery(undefined);
   const [deletePostById] = useDeletePostByIdMutation();
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [sortOption, setSortOption] = useState<string>("");
-  const [filteredPosts, setFilteredPosts] = useState<any[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
 
   const handleDelete = async (postId: string) => {
     try {
       await deletePostById(postId).unwrap();
       message.success("Post deleted successfully!");
       refetch();
-    } catch (error) {
+    } catch {
       message.error("Failed to delete post.");
     }
   };
@@ -35,20 +36,20 @@ const AllPosts = () => {
     let filtered = posts || [];
 
     if (searchTerm) {
-      filtered = filtered.filter((post: any) =>
+      filtered = filtered.filter((post: TPost) =>
         post.post.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (selectedCategory) {
       filtered = filtered.filter(
-        (post: any) => post.category === selectedCategory
+        (post: TPost) => post.category === selectedCategory
       );
     }
 
     if (sortOption === "mostLikes") {
       filtered = [...filtered].sort(
-        (a: any, b: any) => (b.likes?.length || 0) - (a.likes?.length || 0)
+        (a: TPost, b: TPost) => (b.likes?.length || 0) - (a.likes?.length || 0)
       );
     }
 
@@ -66,6 +67,7 @@ const AllPosts = () => {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading posts</div>;
 
+  console.log("filteredPosts", filteredPosts);
   return (
     <div>
       <h1>All Posts</h1>
@@ -107,7 +109,7 @@ const AllPosts = () => {
       </div>
 
       {/* Render filtered posts */}
-      {filteredPosts.map((post: any) => (
+      {filteredPosts.map((post: TPost) => (
         <div
           key={post._id}
           className="card card-compact bg-gray-500 w-full shadow-xl mb-4"
@@ -117,7 +119,7 @@ const AllPosts = () => {
               <img
                 className="h-10 w-10 rounded-full"
                 src={
-                  post.user?.profileImage || "https://via.placeholder.com/150"
+                  post.userIdP.profileImage || "https://via.placeholder.com/150"
                 }
                 alt="User"
               />

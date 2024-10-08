@@ -10,11 +10,13 @@ import {
 import { verifyPayment } from "@/components/Payments/Isverify";
 import ProfilePost from "@/components/ProfilePost/ProfilePost";
 import ProfileViewProfile from "@/components/ProfileViewProfile/ProfileViewProfile";
-import ProfileFollowers from "@/components/ProfileFollowers/ProfileFollowers";
-import ProfileFollowing from "@/components/ProfileFollowing/ProfileFollowing";
-import { VscVerifiedFilled } from "react-icons/vsc";
 
-const ProfileViewPage = ({ params }) => {
+import { VscVerifiedFilled } from "react-icons/vsc";
+import { TLoginUser } from "@/types";
+type TPostDetailsParams = {
+  profileView: string; // Assuming postDetails is a string; adjust if it's a different type
+};
+const ProfileViewPage = ({ params }: { params: TPostDetailsParams }) => {
   const [selectedOption, setSelectedOption] = useState<string>("Post");
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
@@ -43,7 +45,7 @@ const ProfileViewPage = ({ params }) => {
   let myUserId = null;
 
   if (token) {
-    const decodedToken: any = jwtDecode(token);
+    const decodedToken = jwtDecode<TLoginUser>(token);
     myUserId = decodedToken._id;
   }
 
@@ -53,7 +55,7 @@ const ProfileViewPage = ({ params }) => {
       return;
     }
     try {
-      const response = await followUser({
+      await followUser({
         userId: userId,
         followerId: myUserId,
       }).unwrap();
@@ -63,7 +65,7 @@ const ProfileViewPage = ({ params }) => {
       refetchUserData();
 
       setIsFollowing(true);
-    } catch (error) {
+    } catch {
       message.error("Failed to follow the user.");
     }
   };
@@ -74,10 +76,10 @@ const ProfileViewPage = ({ params }) => {
         return <ProfilePost userId={userId} />;
       case "Profile":
         return <ProfileViewProfile userId={userId} />;
-      case "Followers":
-        return <ProfileFollowers userId={userId} />;
-      case "Following":
-        return <ProfileFollowing userId={userId} />;
+      // case "Followers":
+      //   return <ProfileFollowers userId={userId} />;
+      // case "Following":
+      //   return <ProfileFollowing userId={userId} />;
       default:
         return <ProfilePost userId={userId} />;
     }

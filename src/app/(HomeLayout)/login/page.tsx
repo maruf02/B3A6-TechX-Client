@@ -17,9 +17,9 @@ type FieldType = {
   password?: string;
 };
 
-type User = {
-  role?: string;
-};
+// type User = {
+//   role?: string;
+// };
 interface ErrorResponse {
   data?: {
     message?: string;
@@ -29,18 +29,18 @@ interface ErrorResponse {
 const LoginPage = () => {
   // const [form] = Form.useForm();
   const router = useRouter();
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [resetLink, setResetLink] = useState("");
   const [email, setEmail] = useState("");
   const [showResetLink, setShowResetLink] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [loginUser, { isLoading, error }] = useLoginUserMutation();
+  const [loginUser] = useLoginUserMutation();
   const [updatePassword] = useUpdatePasswordMutation();
   const { data: userData, isError } = useGetUserEmailQuery(email);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   // login portion
-  // console.log(userData);
-  const handleLogin = async (event: any) => {
+  console.log(userData);
+  const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const form = event.target as HTMLFormElement;
@@ -68,8 +68,9 @@ const LoginPage = () => {
 
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("accessToken", res.data.accessToken);
-        setIsLoggedIn(true);
+        // setIsLoggedIn(true);
         router.push("/");
+        router.refresh();
       }
     } catch (err) {
       const error = err as ErrorResponse;
@@ -88,30 +89,18 @@ const LoginPage = () => {
   // **************************************
 
   const handleResetPass = () => {
-    const modal = document.getElementById(
-      "ForgetPassModal"
-    ) as HTMLDialogElement;
-    if (modal) {
-      modal.close();
-    }
+    setIsModalOpen(false);
     setShowSuccessModal(true);
   };
   // **************************************
 
   // **************************************
 
-  const handleEmailConfirmForReset = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const form = event.target as HTMLFormElement;
-    const email = form.email.value;
-
-    setEmail(email);
-
-    // console.log("email", isError);
+  const handleEmailConfirmForReset = async (values: { email: string }) => {
+    setEmail(values.email);
 
     if (!isError) {
-      const randomToken = Math.random().toString(36).substr(2, 16); // Generating a random token
+      const randomToken = Math.random().toString(36).substr(2, 16);
       const generatedLink = `https://maruf-k20.com/reset-password?token=${randomToken}`;
       setResetLink(generatedLink);
       setShowResetLink(true);
@@ -119,11 +108,8 @@ const LoginPage = () => {
         setShowResetLink(false);
       }, 10000);
     }
-    // console.log("object", userData);
   };
-  // **************************************
 
-  // **************************************
   const updateNewPassword = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -138,13 +124,8 @@ const LoginPage = () => {
         password: password,
       }).unwrap();
       Swal.fire("Success", "Password updated successfully!", "success");
-      const modal = document.getElementById(
-        "ResetPassModal"
-      ) as HTMLDialogElement;
-      if (modal) {
-        modal.close();
-      }
-    } catch (error) {
+      setIsModalOpen(false);
+    } catch {
       Swal.fire("Error", "Failed to update password.", "error");
     }
   };
@@ -228,77 +209,66 @@ const LoginPage = () => {
                         {/* </form> */}
                         {/* sign in form start */}
                         {/* ********************************* */}
-                        <div className="flex mx-auto justify-center pt-0 z-0">
+                        <div className="flex mx-auto justify-center pt-0">
                           <button
-                            onClick={() => {
-                              const modal = document.getElementById(
-                                "ForgetPassModal"
-                              ) as HTMLDialogElement;
-                              if (modal) {
-                                modal.showModal();
-                              }
-                            }}
-                            className="pt-3 mx-auto text-green-700   flex justify-between"
+                            onClick={() => setIsModalOpen(true)}
+                            className="pt-3 text-green-700"
                           >
-                            <a className="text-center font-semibold">
+                            <span className="font-semibold">
                               Forgot Your password?
-                            </a>
+                            </span>
                           </button>
-                          <dialog id="ForgetPassModal" className="modal  ">
-                            <div className="modal-box bg-[#1A4870]  ">
-                              <form method="dialog">
+                          {isModalOpen && (
+                            <dialog open className="modal">
+                              <div className="modal-box bg-[#1A4870]">
                                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                                   ✕
                                 </button>
-                              </form>
-                              <form onSubmit={handleEmailConfirmForReset}>
-                                <div className="flex justify-center pt-5 ">
-                                  <h1 className="text-white text-3xl ">
-                                    Reset Your Password
-                                  </h1>
-                                </div>
-                                <p className="border border-1 border-gray-400 my-3 "></p>
-                                <div className="flex flex-col gap-2">
-                                  <div>
-                                    <label className="pr-12 text-white">
-                                      Email:
-                                    </label>
-                                    <input
+                                <h1 className="text-white text-3xl text-center pt-5">
+                                  Reset Your Password
+                                </h1>
+                                <Form onFinish={handleEmailConfirmForReset}>
+                                  <Form.Item
+                                    name="email"
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: "Please input your email!",
+                                      },
+                                    ]}
+                                  >
+                                    <Input
                                       type="email"
-                                      //   defaultValue="abc@gmai.com"
-                                      required
-                                      name="email"
                                       placeholder="Enter your Email"
-                                      className="input input-bordered input-primary w-full max-w-xs bg-inherit text-white"
+                                      className="input input-bordered input-primary w-full max-w-xs bg-inherit text-black"
                                     />
-                                  </div>
-
-                                  <div className="flex justify-center my-5  ">
-                                    <button className="flex text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-full text-2xl pb-1 ">
-                                      confirm Your Email
+                                  </Form.Item>
+                                  <div className="flex justify-center my-5">
+                                    <button className="flex text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-full text-2xl pb-1">
+                                      Confirm Your Email
                                     </button>
                                   </div>
-                                  <div className="text-lg pt-3 text-center"></div>
-                                </div>
-                              </form>
-                              {isError ? (
-                                <p className="text-red-500 text-md">
-                                  Please Enter created Email Or Create ne
-                                  account
-                                </p>
-                              ) : (
-                                showResetLink && (
-                                  <button
-                                    onClick={handleResetPass}
-                                    className="text-green-500 text-xl"
-                                  >
-                                    Reset Link: {resetLink}
-                                  </button>
-                                )
-                              )}
-                            </div>
-                          </dialog>
+                                </Form>
+                                {isError ? (
+                                  <p className="text-red-500 text-md">
+                                    Please Enter created Email Or Create new
+                                    account
+                                  </p>
+                                ) : (
+                                  showResetLink && (
+                                    <button
+                                      onClick={handleResetPass}
+                                      className="text-green-500 text-xl"
+                                    >
+                                      Reset Link: {resetLink}
+                                    </button>
+                                  )
+                                )}
+                              </div>
+                            </dialog>
+                          )}
                         </div>
+
                         {/* **************************************************** */}
                       </div>
                       <div className="p-6 px-1 pt-0 text-center bg-transparent border-t-0 border-t-solid rounded-b-2xl lg:px-2">

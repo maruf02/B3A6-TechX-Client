@@ -1,4 +1,4 @@
-export const uploadImageToCloudinary = async (file) => {
+export const uploadImageToCloudinary = async (file: File | null) => {
   if (!file) return null;
 
   const formData = new FormData();

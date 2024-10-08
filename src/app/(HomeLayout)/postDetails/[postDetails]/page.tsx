@@ -11,8 +11,13 @@ import {
   useDeleteCommentMutation,
 } from "@/Redux/api/baseApi";
 import Swal from "sweetalert2";
+import { TComment, TLoginUser } from "@/types";
 
-const PostDetails = ({ params }) => {
+type TPostDetailsParams = {
+  postDetails: string; // Assuming postDetails is a string; adjust if it's a different type
+};
+
+const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
   const postId = params.postDetails;
 
   const token = localStorage.getItem("accessToken");
@@ -20,7 +25,7 @@ const PostDetails = ({ params }) => {
   let name = null;
 
   if (token) {
-    const decodedToken = jwtDecode(token);
+    const decodedToken = jwtDecode<TLoginUser>(token);
     userId = decodedToken._id;
     name = decodedToken.name;
   }
@@ -40,7 +45,7 @@ const PostDetails = ({ params }) => {
   } = useGetCommentsByPostIdQuery(postId, { skip: !postId });
 
   const [commentText, setCommentText] = useState("");
-  const [editCommentId, setEditCommentId] = useState(null);
+  const [editCommentId, setEditCommentId] = useState<string | null>(null);
   const [editedCommentText, setEditedCommentText] = useState("");
   const [postComment, { isLoading: isPosting }] = usePostCommentMutation();
   const [updateComment] = useUpdateCommentMutation();
@@ -71,7 +76,7 @@ const PostDetails = ({ params }) => {
     }
   };
 
-  const handleUpdateComment = async (commentId) => {
+  const handleUpdateComment = async (commentId: string) => {
     if (!editedCommentText.trim()) return;
     try {
       await updateComment({ commentId, comment: editedCommentText }).unwrap();
@@ -84,7 +89,7 @@ const PostDetails = ({ params }) => {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
+  const handleDeleteComment = async (commentId: string) => {
     try {
       await deleteComment(commentId).unwrap();
       Swal.fire("Comment deleted successfully");
@@ -201,7 +206,7 @@ const PostDetails = ({ params }) => {
             ) : (
               <div>
                 {comments && comments.length > 0 ? (
-                  comments.map((comment) => (
+                  comments.map((comment: TComment) => (
                     <div key={comment._id} className="mb-2">
                       {editCommentId === comment._id ? (
                         <div className="flex gap-2">

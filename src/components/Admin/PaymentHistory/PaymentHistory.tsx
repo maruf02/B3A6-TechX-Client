@@ -1,4 +1,5 @@
 import { useGetAllPaymentQuery } from "@/Redux/api/baseApi";
+import { TPayment } from "@/types";
 import React from "react";
 
 const PaymentHistory = () => {
@@ -35,7 +36,7 @@ const PaymentHistory = () => {
           </tr>
         </thead>
         <tbody>
-          {payments.map((payment) => (
+          {payments.map((payment: TPayment) => (
             <tr key={payment._id} className="border-b hover:bg-gray-100">
               <td className="border px-4 py-2">{payment.transactionId}</td>
               <td className="border px-4 py-2">

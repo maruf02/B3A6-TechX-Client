@@ -2,35 +2,59 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+
 import { jwtDecode } from "jwt-decode";
+import { TLoginUser } from "@/types";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
-  // const accessToken =
-  //   Cookies.get("accessToken") || localStorage.getItem("accessToken");
-  const accessToken = localStorage.getItem("accessToken");
-  const role = accessToken ? jwtDecode(accessToken).role : null;
+  const [role, setRole] = useState<string | null>(null);
+  // const accessToken = localStorage.getItem("accessToken");
+  // const role = accessToken ? jwtDecode(accessToken).role : null;
+
+  // useEffect(() => {
+  //   // Check if the access token exists in localStorage
+  //   const accessToken = localStorage.getItem("accessToken");
+  //   if (accessToken) {
+  //     setIsLoggedIn(true);
+  //     setRole(jwtDecode<TLoginUser>(accessToken).role);
+  //   } else {
+  //     setIsLoggedIn(false);
+  //   }
+  // }, []);
   useEffect(() => {
-    // Check if the access token exists in cookies or localStorage
+    const accessToken = localStorage.getItem("accessToken");
 
     if (accessToken) {
-      setIsLoggedIn(true);
+      try {
+        const decodedToken = jwtDecode<TLoginUser>(accessToken);
+        setIsLoggedIn(true);
+        setRole(decodedToken.role);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setIsLoggedIn(false);
+      }
     } else {
       setIsLoggedIn(false);
     }
   }, []);
 
-  const handleLogout = () => {
-    // Remove tokens from cookies/localStorage
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-    localStorage.removeItem("accessToken");
-
-    // Update login state and redirect to login page
-    setIsLoggedIn(false);
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // Ensure cookies are sent with the request
+      });
+      if (response.ok) {
+        // Handle successful logout
+        localStorage.removeItem("accessToken");
+        setIsLoggedIn(false);
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   const menu = (
@@ -50,12 +74,6 @@ const Navbar = () => {
           <button>Contact</button>
         </Link>
       </li>
-      {/* <li>
-        <Link href="/profile/user" className="activeNavLink">
-          <button>profile</button>
-        </Link>
-      </li> */}
-
       <li>
         <Link href={`/profile/${role}`} className="activeNavLink">
           <button>Profile</button>
@@ -63,6 +81,7 @@ const Navbar = () => {
       </li>
     </>
   );
+
   return (
     <div>
       <div className="navbar bg-base-100">
@@ -105,7 +124,7 @@ const Navbar = () => {
             >
               <div className="w-10 rounded-full">
                 <img
-                  alt="Tailwind CSS Navbar component"
+                  alt="User Avatar"
                   src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
               </div>
@@ -114,18 +133,22 @@ const Navbar = () => {
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
-              <li>
-                <a>Profile</a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Login</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
+              {isLoggedIn ? (
+                <>
+                  <li>
+                    <Link href={`/profile/${role}`}>Profile</Link>
+                  </li>
+                  <li>
+                    <button onClick={handleLogout} className="w-full text-left">
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link href="/login">Login</Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

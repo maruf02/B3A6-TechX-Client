@@ -1,6 +1,9 @@
 import ShowPost from "./ShowPost";
 
-const ProfilePost = ({ userId }) => {
+interface ProfilePostProps {
+  userId: string; // or 'string | null' if it can also be null
+}
+const ProfilePost: React.FC<ProfilePostProps> = ({ userId }) => {
   console.log("object", userId);
   return (
     <div>

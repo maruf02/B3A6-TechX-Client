@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { Button, Modal, Select, Space, Spin } from "antd";
-import ReactQuill from "react-quill";
+import dynamic from "next/dynamic"; // Import dynamic from Next.js
 import "react-quill/dist/quill.snow.css";
 import {
   useCreatePostMutation,
@@ -8,6 +9,10 @@ import {
 } from "@/Redux/api/baseApi";
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
+import { TLoginUser } from "@/types";
+
+// Dynamically import ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const HomePostCreate = () => {
   const [editorContent, setEditorContent] = useState("");
@@ -16,9 +21,17 @@ const HomePostCreate = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [createPost] = useCreatePostMutation();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
-  const token = localStorage.getItem("accessToken");
-  const userId = token ? jwtDecode(token)._id : null;
+  // Use useEffect to run client-side code
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const decodedToken = jwtDecode<TLoginUser>(token);
+      setUserId(decodedToken._id);
+    }
+  }, []);
 
   const { refetch } = useGetPostByUserIdQuery(userId, {
     skip: !userId,
@@ -45,7 +58,7 @@ const HomePostCreate = () => {
   const getUserDataFromToken = () => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      const decodedToken: any = jwtDecode(token);
+      const decodedToken = jwtDecode<TLoginUser>(token);
       return {
         userId: decodedToken._id,
         name: decodedToken.name,
@@ -143,8 +156,6 @@ const HomePostCreate = () => {
     }
   };
 
-  const [open, setOpen] = useState(false);
-
   const showModal = () => {
     setOpen(true);
   };
@@ -159,11 +170,6 @@ const HomePostCreate = () => {
 
   return (
     <div>
-      {/* <h1 className="text-4xl underline text-center py-5">
-        Create your Blog Post
-      </h1> */}
-
-      {/* Button to open modal */}
       <div className="w-2/4 mx-auto mb-4">
         <Button
           type="primary"
@@ -174,7 +180,6 @@ const HomePostCreate = () => {
         </Button>
       </div>
 
-      {/* Modal section */}
       <Modal
         title="Create New Post"
         open={open}
@@ -190,7 +195,6 @@ const HomePostCreate = () => {
           </div>
         ) : (
           <>
-            {/* Quill Editor */}
             <ReactQuill
               theme="snow"
               value={editorContent}
@@ -217,7 +221,6 @@ const HomePostCreate = () => {
                 </Space>
               </div>
 
-              {/* Type Select */}
               <div className="flex gap-1 items-center">
                 <h1>Select Type</h1>
                 <Space wrap>
@@ -233,7 +236,6 @@ const HomePostCreate = () => {
                 </Space>
               </div>
 
-              {/* Upload Portion */}
               <div className="flex items-center">
                 <input
                   type="file"

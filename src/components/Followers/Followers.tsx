@@ -1,4 +1,5 @@
 import { useGetUserByIdQuery } from "@/Redux/api/baseApi";
+import { TLoginUser } from "@/types";
 import { jwtDecode } from "jwt-decode";
 import React from "react";
 
@@ -7,7 +8,7 @@ const Followers = () => {
   let userId: string | null = null;
 
   if (token) {
-    const decodedToken: any = jwtDecode(token);
+    const decodedToken = jwtDecode<TLoginUser>(token);
     userId = decodedToken._id;
   }
 

@@ -22,13 +22,13 @@ export const baseApi = createApi({
       invalidatesTags: ["Auth"],
     }),
 
-    refreshToken: builder.mutation({
-      query: () => ({
-        url: "/auth/refresh-token",
-        method: "POST",
-      }),
-      // providesTags: ["Auth"], // Use this to revalidate tokens
-    }),
+    // refreshToken: builder.mutation({
+    //   query: () => ({
+    //     url: "/auth/refresh-token",
+    //     method: "POST",
+    //   }),
+    //   // providesTags: ["Auth"], // Use this to revalidate tokens
+    // }),
     updatePassword: builder.mutation({
       query: ({ email, password }) => ({
         url: `/auth/usersPass/${email}`,
@@ -201,7 +201,7 @@ export const {
   useGetAllUserQuery,
   useUpdateUserByIdMutation,
   useRegisterUserMutation,
-  useRefreshTokenMutation,
+  // useRefreshTokenMutation,
   useCreatePostMutation,
   useUpdatePostByIdMutation,
   useDeletePostByIdMutation,

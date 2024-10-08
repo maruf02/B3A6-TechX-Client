@@ -1,9 +1,12 @@
 "use client";
 import { useGetPostByUserIdQuery } from "@/Redux/api/baseApi";
+import { TPost } from "@/types";
 
 import Link from "next/link";
-
-const ShowPost = ({ userId }) => {
+interface ProfilePostProps {
+  userId: string; // or 'string | null' if it can also be null
+}
+const ShowPost: React.FC<ProfilePostProps> = ({ userId }) => {
   const { data: posts, isLoading } = useGetPostByUserIdQuery(userId, {
     skip: !userId,
   });
@@ -22,7 +25,7 @@ const ShowPost = ({ userId }) => {
 
   return (
     <div className="mx-auto my-2 max-w-3xl mt-5">
-      {reversedPosts.map((post: any) => (
+      {reversedPosts.map((post: TPost) => (
         <div
           key={post._id}
           className="card card-compact bg-gray-500 w-full shadow-xl mb-4"

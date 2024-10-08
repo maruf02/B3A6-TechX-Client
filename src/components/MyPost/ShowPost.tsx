@@ -4,12 +4,16 @@ import {
   useUpdatePostByIdMutation,
   useDeletePostByIdMutation,
 } from "@/Redux/api/baseApi";
+import { TLoginUser, TPost } from "@/types";
 import { Modal, Select, Space, Spin, message } from "antd";
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
-import React, { useState } from "react";
-import ReactQuill from "react-quill";
+import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic"; // Import dynamic from Next.js
+import "react-quill/dist/quill.snow.css";
 import Swal from "sweetalert2";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const ShowPost = () => {
   const [open, setOpen] = useState(false);
@@ -19,14 +23,22 @@ const ShowPost = () => {
   const [file, setFile] = useState<File | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const token = localStorage.getItem("accessToken");
+  // const token = localStorage.getItem("accessToken");
 
-  let userId = null;
-  if (token) {
-    const decodedToken: any = jwtDecode(token);
-    userId = decodedToken._id;
-  }
+  // let userId = null;
+  // if (token) {
+  //   const decodedToken = jwtDecode<TLoginUser>(token);
+  //   userId = decodedToken._id;
+  // }
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const decodedToken = jwtDecode<TLoginUser>(token);
+      setUserId(decodedToken._id);
+    }
+  }, []);
 
   const {
     data: posts,
@@ -53,7 +65,7 @@ const ShowPost = () => {
   const reversedPosts = posts.slice().reverse();
 
   // Modal option
-  const showModal = (post: any) => {
+  const showModal = (post: TPost) => {
     setSelectedPostId(post._id);
     setEditorContent(post.post);
     setCategory(post.category);
@@ -87,7 +99,7 @@ const ShowPost = () => {
   const handleOk = async () => {
     setLoading(true);
     const previousImage = posts.find(
-      (post) => post._id === selectedPostId
+      (post: TPost) => post._id === selectedPostId
     )?.images;
 
     let imageUrl = "";
@@ -108,7 +120,7 @@ const ShowPost = () => {
       message.success("Post updated successfully!");
       refetch();
       Swal.fire("Post updated successfully!");
-    } catch (error) {
+    } catch {
       message.error("Failed to update post.");
     } finally {
       setLoading(false);
@@ -143,14 +155,14 @@ const ShowPost = () => {
       await deletePostById(postId).unwrap();
       message.success("Post deleted successfully!");
       refetch();
-    } catch (error) {
+    } catch {
       message.error("Failed to delete post.");
     }
   };
 
   return (
     <div className="mx-auto my-2 max-w-3xl mt-5">
-      {reversedPosts.map((post: any) => (
+      {reversedPosts.map((post: TPost) => (
         <div
           key={post._id}
           className="card card-compact bg-gray-500 w-full shadow-xl mb-4"

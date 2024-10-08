@@ -12,17 +12,18 @@ import Swal from "sweetalert2";
 import { verifyPayment } from "../Payments/Isverify";
 import { useRouter } from "next/navigation";
 import { message } from "antd";
+import { TLoginUser, TPost } from "@/types";
 
 const HomePage = () => {
   const [page, setPage] = useState(1);
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<TPost[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredPosts, setFilteredPosts] = useState<any[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<TPost[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [sortOption, setSortOption] = useState<string>("");
   const router = useRouter();
-  const { data: fetchedPosts, isFetching, isError } = useGetAllPostsQuery(page);
+  const { data: fetchedPosts, isFetching } = useGetAllPostsQuery(page);
   const [followUser] = useFollowUserMutation();
   const [followedUsers, setFollowedUsers] = useState<string[]>([]);
 
@@ -57,8 +58,18 @@ const HomePage = () => {
     };
   }, [isFetching, hasMore]);
 
-  const token = localStorage.getItem("accessToken");
-  const userId = token ? jwtDecode(token)._id : null;
+  // const token = localStorage.getItem("accessToken");
+  // const userId = token ? jwtDecode<TLoginUser>(token)._id : null;
+  const [userId, setUserId] = useState<string | null>(null);
+  //  const [userName, setUserName] = useState<string | null>(null);
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const decodedToken = jwtDecode<TLoginUser>(token);
+      setUserId(decodedToken._id);
+      //  setUserName(decodedToken.name);
+    }
+  }, []);
 
   const { data: payments } = useGetPaymentByUserIdQuery(userId || "", {
     skip: !userId,
@@ -82,7 +93,7 @@ const HomePage = () => {
     // Sort by most likes
     if (sortOption === "mostLikes") {
       filtered = [...filtered].sort(
-        (a: any, b: any) => (b.likes?.length || 0) - (a.likes?.length || 0)
+        (a: TPost, b: TPost) => (b.likes?.length || 0) - (a.likes?.length || 0)
       );
     }
 
@@ -95,8 +106,8 @@ const HomePage = () => {
     setSortOption("");
     setFilteredPosts(posts);
   };
-  const isVerified = verifyPayment(payment.endTime);
-  const handlePremium = (post: any) => {
+  // const isVerified = verifyPayment(payment.endTime);
+  const handlePremium = (post: TPost) => {
     const postUserID = post.userId;
     const myId = userId;
     // console.log("postUserID", postUserID.profileImage);
@@ -133,7 +144,7 @@ const HomePage = () => {
     // ******************************
   };
 
-  const handlefollow = async (post: any) => {
+  const handlefollow = async (post: TPost) => {
     const postUserID = post.userId;
     const myUserId = userId;
 
@@ -143,7 +154,7 @@ const HomePage = () => {
     }
     console.log("myUserId", myUserId);
     try {
-      const response = await followUser({
+      await followUser({
         userId: postUserID,
         followerId: myUserId,
       }).unwrap();
@@ -155,7 +166,7 @@ const HomePage = () => {
       ]);
 
       // refetchUserData();
-    } catch (error) {
+    } catch {
       message.error("Failed to follow the user.");
     }
   };
@@ -209,7 +220,7 @@ const HomePage = () => {
       </div>
 
       {/* Display posts */}
-      {filteredPosts.map((post: any, index: number) => (
+      {filteredPosts.map((post: TPost, index: number) => (
         <div
           key={`${post._id}-${index}`}
           className="card card-compact bg-gray-500 w-full shadow-xl mb-4"

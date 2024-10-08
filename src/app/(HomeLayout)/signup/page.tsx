@@ -6,11 +6,20 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import Swal from "sweetalert2";
 
+interface TSignUpFormValues {
+  name: string;
+  email: string;
+  password: string;
+  confirm: string;
+  phone: string;
+  agreement?: boolean;
+}
+
 const SignUpPage = () => {
   const [registerUser] = useRegisterUserMutation();
   const [form] = Form.useForm();
   const router = useRouter();
-  const onFinish = (values: any) => {
+  const onFinish = (values: TSignUpFormValues) => {
     const userInfo = {
       name: values.name,
       email: values.email,
@@ -39,8 +48,8 @@ const SignUpPage = () => {
       });
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+  const onFinishFailed = () => {
+    console.log("Failed:");
   };
 
   return (
@@ -179,17 +188,7 @@ const SignUpPage = () => {
                                 ]}
                               >
                                 <Checkbox className="ml-2">
-                                  <p
-                                    onClick={() => {
-                                      const modal = document.getElementById(
-                                        "term&condition"
-                                      ) as HTMLDialogElement;
-                                      if (modal) {
-                                        modal.showModal();
-                                      }
-                                    }}
-                                    className="pt-4 text-green-600"
-                                  >
+                                  <p className="pt-4 text-green-600">
                                     I agree to the terms and conditions
                                   </p>
                                 </Checkbox>
@@ -216,34 +215,7 @@ const SignUpPage = () => {
                           </p>
                         </div>
                         <div className="p-0 px-1 pt-0 text-center bg-transparent border-t-0 border-t-solid rounded-b-2xl lg:px-2">
-                          <p className="mx-auto mb-6 leading-normal text-sm">
-                            <button
-                              onClick={() => {
-                                const modal = document.getElementById(
-                                  "term&condition"
-                                ) as HTMLDialogElement;
-                                if (modal) {
-                                  modal.showModal();
-                                }
-                              }}
-                              className="relative z-10 font-semibold text-transparent bg-gradient-to-tl from-blue-600 to-cyan-400 bg-clip-text pr-5"
-                            >
-                              Privacy Policy
-                            </button>
-                            <button
-                              onClick={() => {
-                                const modal = document.getElementById(
-                                  "term&condition"
-                                ) as HTMLDialogElement;
-                                if (modal) {
-                                  modal.showModal();
-                                }
-                              }}
-                              className="relative z-10 font-semibold text-transparent bg-gradient-to-tl from-blue-600 to-cyan-400 bg-clip-text"
-                            >
-                              Terms of Service
-                            </button>
-                          </p>
+                          <p className="mx-auto mb-6 leading-normal text-sm"></p>
                         </div>
                       </div>
                     </div>

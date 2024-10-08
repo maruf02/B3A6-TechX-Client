@@ -4,21 +4,32 @@ import AllUsers from "@/components/Admin/AllUsers/AllUsers";
 import GraphSummary from "@/components/Admin/GraphSummary/GraphSummary";
 import PaymentHistory from "@/components/Admin/PaymentHistory/PaymentHistory";
 import { useGetUserByIdQuery } from "@/Redux/api/baseApi";
+import { TLoginUser } from "@/types";
 import { Segmented } from "antd";
 import { jwtDecode } from "jwt-decode";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AdminHomePage = () => {
   const [selectedOption, setSelectedOption] = useState<string>("Post");
-  const token = localStorage.getItem("accessToken");
-  const userName = token ? jwtDecode(token).name : null;
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const decodedToken = jwtDecode<TLoginUser>(token);
+      setUserId(decodedToken._id);
+      setUserName(decodedToken.name);
+    }
+  }, []);
+  // const token = localStorage.getItem("accessToken");
+  // const userName = token ? jwtDecode<TLoginUser>(token).name : null;
 
-  let userId = null;
-  if (token) {
-    const decodedToken: any = jwtDecode(token);
-    userId = decodedToken._id;
-  }
-  console.log(userId);
+  // let userId = null;
+  // if (token) {
+  //   const decodedToken = jwtDecode<TLoginUser>(token);
+  //   userId = decodedToken._id;
+  // }
+  // console.log(userId);
 
   const {
     data: userData,

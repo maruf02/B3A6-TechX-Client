@@ -8,13 +8,23 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 
 import { verifyPayment } from "./Isverify";
+import { TLoginUser } from "@/types";
+
+interface ApiError {
+  data?: {
+    message?: string;
+  };
+  // Add other properties if needed, such as:
+  status?: number;
+  // Or any additional properties that your error might have
+}
 
 const Payments = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [createPayment] = useCreatePaymentMutation();
 
   const token = localStorage.getItem("accessToken");
-  const userId = token ? jwtDecode(token)._id : null;
+  const userId = token ? jwtDecode<TLoginUser>(token)._id : null;
 
   const { data: payments } = useGetPaymentByUserIdQuery(userId || "", {
     skip: !userId,
@@ -60,10 +70,18 @@ const Payments = () => {
         throw new Error("Payment URL not found in response.");
       }
     } catch (error) {
-      console.error("Error during payment submission:", error);
+      // console.error("Error during payment submission:", error);
+      // Swal.fire(
+      //   "Error",
+      //   error.data?.message || "There was a problem processing your payment",
+      //   "error"
+      // );
+      const apiError = error as ApiError;
+
+      console.error("Error during payment submission:", apiError);
       Swal.fire(
         "Error",
-        error.data?.message || "There was a problem processing your payment",
+        apiError.data?.message || "There was a problem processing your payment",
         "error"
       );
     }

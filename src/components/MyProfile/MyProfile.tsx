@@ -8,15 +8,24 @@ import { jwtDecode } from "jwt-decode";
 import { uploadImageToCloudinary } from "./UploadImageToCloudinary";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+import { TLoginUser, TUser } from "@/types";
 
 const MyProfile = () => {
-  const token = localStorage.getItem("accessToken");
-  let userId = null;
+  // const token = localStorage.getItem("accessToken");
+  // let userId = null;
 
-  if (token) {
-    const decodedToken: any = jwtDecode(token);
-    userId = decodedToken._id;
-  }
+  // if (token) {
+  //   const decodedToken = jwtDecode<TLoginUser>(token);
+  //   userId = decodedToken._id;
+  // }
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const decodedToken = jwtDecode<TLoginUser>(token);
+      setUserId(decodedToken._id);
+    }
+  }, []);
 
   const {
     data: userData,
@@ -30,7 +39,7 @@ const MyProfile = () => {
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
 
-  const { register, handleSubmit, setValue } = useForm({
+  const { register, handleSubmit, setValue } = useForm<TUser>({
     defaultValues: {
       name: "",
       email: userData?.data?.email || "",
@@ -58,7 +67,7 @@ const MyProfile = () => {
     return { profileImageUrl, coverImageUrl };
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: TUser) => {
     const { profileImageUrl, coverImageUrl } = await handleImageUpload();
 
     const newUserData = {
@@ -159,14 +168,22 @@ const MyProfile = () => {
                 <label>Profile Image</label>
                 <input
                   type="file"
-                  onChange={(e) => setProfileImageFile(e.target.files[0])}
+                  // onChange={(e) => setProfileImageFile(e.target.files[0])}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setProfileImageFile(file);
+                  }}
                 />
               </div>
               <div className="mt-2">
                 <label>Cover Image</label>
                 <input
                   type="file"
-                  onChange={(e) => setCoverImageFile(e.target.files[0])}
+                  // onChange={(e) => setCoverImageFile(e.target.files[0])}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setCoverImageFile(file);
+                  }}
                 />
               </div>
 

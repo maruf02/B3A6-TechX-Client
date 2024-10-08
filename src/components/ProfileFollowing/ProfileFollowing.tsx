@@ -1,7 +1,7 @@
 import React from "react";
 
-const ProfileFollowing = ({ userId }) => {
-  return <div>ProfileFollowinguserId={userId}</div>;
+const ProfileFollowing = () => {
+  return <div>ProfileFollowinguserId</div>;
 };
 
 export default ProfileFollowing;
