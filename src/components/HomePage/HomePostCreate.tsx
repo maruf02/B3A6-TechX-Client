@@ -24,7 +24,6 @@ const HomePostCreate = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
-  // Use useEffect to run client-side code
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {

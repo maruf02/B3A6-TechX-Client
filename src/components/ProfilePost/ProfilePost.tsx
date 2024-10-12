@@ -1,7 +1,7 @@
 import ShowPost from "./ShowPost";
 
 interface ProfilePostProps {
-  userId: string; // or 'string | null' if it can also be null
+  userId: string;
 }
 const ProfilePost: React.FC<ProfilePostProps> = ({ userId }) => {
   console.log("object", userId);

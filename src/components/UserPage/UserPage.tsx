@@ -2,14 +2,19 @@
 import { useEffect, useState } from "react";
 import { Segmented } from "antd";
 
-import Analytics from "@/components/Analytics/Analytics";
 import Payments from "@/components/Payments/Payments";
 import Followers from "@/components/Followers/Followers";
 import { jwtDecode } from "jwt-decode";
 import MyProfile from "@/components/MyProfile/MyProfile";
-import { useGetUserByIdQuery } from "@/Redux/api/baseApi";
+import {
+  useGetPaymentByUserIdQuery,
+  useGetUserByIdQuery,
+} from "@/Redux/api/baseApi";
 import { TLoginUser } from "@/types";
 import MyPost from "../MyPost/MyPost";
+import { verifyPayment } from "../Payments/Isverify";
+import { VscVerifiedFilled } from "react-icons/vsc";
+import { Analytics } from "../Analytics/Analytics";
 // import HomePostCreate from "../HomePage/HomePostCreate";
 
 const UserProfilePage = () => {
@@ -35,7 +40,11 @@ const UserProfilePage = () => {
   } = useGetUserByIdQuery(userId, {
     skip: !userId,
   });
+  const { data: payments } = useGetPaymentByUserIdQuery(userId || "", {
+    skip: !userId,
+  });
 
+  const isVerify = verifyPayment(payments?.data?.endTime);
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading user data</div>;
 
@@ -88,7 +97,18 @@ const UserProfilePage = () => {
         </div>
         {/* different option */}
         <div className="w-full lg:w-4/12 h-28 relative lg:left-[24%] -top-24 lg:-top-56">
-          <div className="text-4xl font-bold px-10 h-1/2">{userName}</div>
+          <div className="flex text-4xl font-bold px-10 h-1/2">
+            {userName}
+            <span>
+              {isVerify === "yes" ? (
+                <>
+                  <VscVerifiedFilled className="text-blue-700" />
+                </>
+              ) : (
+                " "
+              )}
+            </span>
+          </div>
           <div className="h-1/2">
             <Segmented<string>
               options={["Post", "Profile", "Analytics", "Payments"]}

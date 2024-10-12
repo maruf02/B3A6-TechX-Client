@@ -14,9 +14,8 @@ interface ApiError {
   data?: {
     message?: string;
   };
-  // Add other properties if needed, such as:
+
   status?: number;
-  // Or any additional properties that your error might have
 }
 
 const Payments = () => {

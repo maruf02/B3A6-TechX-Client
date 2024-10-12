@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api",
+    baseUrl: "https://techx-server-five.vercel.app/api",
     credentials: "include",
   }),
   tagTypes: ["Auth", "Post"],
@@ -20,6 +20,19 @@ export const baseApi = createApi({
         body: userData,
       }),
       invalidatesTags: ["Auth"],
+    }),
+
+    postLoginActivity: builder.mutation({
+      query: (loginActivityInfo) => ({
+        url: `/loginActivity`,
+        method: "POST",
+        body: loginActivityInfo,
+      }),
+    }),
+
+    // Query to get all login activities
+    getLoginActivities: builder.query({
+      query: () => `/loginActivities`,
     }),
 
     // refreshToken: builder.mutation({
@@ -188,12 +201,17 @@ export const baseApi = createApi({
     getCommentsByPostId: builder.query({
       query: (postId) => `comments/${postId}`,
     }),
+    getAllComments: builder.query({
+      query: () => "allComments",
+    }),
   }),
 });
 
 export const {
   useGetAllCarsQuery,
   useLoginUserMutation,
+  useGetLoginActivitiesQuery,
+  usePostLoginActivityMutation,
   useUpdatePasswordMutation,
   useAddUserMutation,
   useUpdateUserMutation,
@@ -211,6 +229,7 @@ export const {
   useGetPostByPostIdQuery,
   usePostCommentMutation,
   useGetCommentsByPostIdQuery,
+  useGetAllCommentsQuery,
   useDislikePostMutation,
   useLikePostMutation,
   useUpdateCommentMutation,

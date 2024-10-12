@@ -14,7 +14,7 @@ import ProfileViewProfile from "@/components/ProfileViewProfile/ProfileViewProfi
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { TLoginUser } from "@/types";
 type TPostDetailsParams = {
-  profileView: string; // Assuming postDetails is a string; adjust if it's a different type
+  profileView: string;
 };
 const ProfileViewPage = ({ params }: { params: TPostDetailsParams }) => {
   const [selectedOption, setSelectedOption] = useState<string>("Post");
@@ -110,6 +110,7 @@ const ProfileViewPage = ({ params }: { params: TPostDetailsParams }) => {
             className="w-full h-full rounded-2xl"
           />
         </div>
+
         {/* different option */}
         <div className="w-full lg:w-4/12 h-28  relative lg:left-[24%] -top-24 lg:-top-56">
           <div className="flex justify-between">

@@ -2,7 +2,7 @@
 
 import { useGetUserByIdQuery } from "@/Redux/api/baseApi";
 interface ProfilePostProps {
-  userId: string; // or 'string | null' if it can also be null
+  userId: string;
 }
 const ProfileViewProfile: React.FC<ProfilePostProps> = ({ userId }) => {
   const {

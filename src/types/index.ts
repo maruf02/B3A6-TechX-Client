@@ -20,6 +20,8 @@ export type TUser = {
   address: string;
   follower?: string[];
   following?: string[];
+  followerP?: string[];
+  followingP?: string[];
 };
 
 export type TComment = {
@@ -70,5 +72,11 @@ export type TPost = {
 export type TDecodedToken = {
   _id: string;
   name: string;
-  // Add other properties you expect in the token
+};
+
+export type TloginActivity = {
+  _id: string;
+  email: string;
+  loginAt: string;
+  device: string;
 };

@@ -7,11 +7,14 @@ import { Form, Input } from "antd";
 import {
   useGetUserEmailQuery,
   useLoginUserMutation,
+  usePostLoginActivityMutation,
   useUpdatePasswordMutation,
 } from "@/Redux/api/baseApi";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import moment from "moment";
+import Bowser from "bowser";
 
 type FieldType = {
   password?: string;
@@ -37,6 +40,7 @@ const LoginPage = () => {
   const [loginUser] = useLoginUserMutation();
   const [updatePassword] = useUpdatePasswordMutation();
   const { data: userData, isError } = useGetUserEmailQuery(email);
+  const [postLoginActivity] = usePostLoginActivityMutation();
   // const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   // login portion
   console.log(userData);
@@ -46,11 +50,23 @@ const LoginPage = () => {
     const form = event.target as HTMLFormElement;
     const email = form.email.value;
     const password = form.password.value;
+
     // const userInfo = {
     //   email: data.email,
     //   password: data.password,
     // };
     const userInfo = { email, password };
+    const formattedDateTime = moment().format("YYYY-MM-DD HH:mm:ss");
+    const loginAt = formattedDateTime;
+    const browser = Bowser.getParser(window.navigator.userAgent);
+    const browserName = browser.getBrowser().name;
+    const browserVersion = browser.getBrowser().version;
+    const osName = browser.getOS().name;
+    const osVersion = browser.getOS().version;
+    const platformType = browser.getPlatformType();
+    const device = `${browserName},${browserVersion},${osName},${osVersion},${platformType}`;
+
+    const loginActivityInfo = { email, loginAt, device };
 
     try {
       const res = await loginUser(userInfo).unwrap();
@@ -68,6 +84,7 @@ const LoginPage = () => {
 
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("accessToken", res.data.accessToken);
+        await postLoginActivity(loginActivityInfo).unwrap();
         // setIsLoggedIn(true);
         router.push("/");
         router.refresh();

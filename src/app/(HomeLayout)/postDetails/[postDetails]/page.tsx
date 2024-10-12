@@ -12,9 +12,10 @@ import {
 } from "@/Redux/api/baseApi";
 import Swal from "sweetalert2";
 import { TComment, TLoginUser } from "@/types";
+import Link from "next/link";
 
 type TPostDetailsParams = {
-  postDetails: string; // Assuming postDetails is a string; adjust if it's a different type
+  postDetails: string;
 };
 
 const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
@@ -133,11 +134,18 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
           <div className="flex items-center mb-4">
             <img
               className="h-10 w-10 rounded-full"
-              src="https://via.placeholder.com/150"
+              src={
+                post.userIdP.profileImage ||
+                "https://png.pngtree.com/png-vector/20230304/ourmid/pngtree-male-avator-icon-vector-png-image_6631112.png"
+              }
               alt={`${post.name}'s profile`}
             />
             <div className="ml-3">
-              <h2 className="text-lg font-semibold">{post.name}</h2>
+              <Link href={`/profileView/${post.userId}`}>
+                <h2 className="text-lg font-semibold text-blue-700">
+                  {post.name}
+                </h2>
+              </Link>
               <p className="text-gray-500">
                 {post.category} | {post.type}
               </p>
@@ -157,8 +165,8 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
           />
 
           <div className="mb-2 flex gap-2">
-            <h1 className="font-semibold">{post.likes?.length} Likes</h1>
-            <h1 className="font-semibold">{post.dislikes?.length} Dislikes</h1>
+            <h1 className="font-semibold">{post.likes?.length} Upvote </h1>
+            <h1 className="font-semibold">{post.dislikes?.length} Downvote </h1>
           </div>
 
           <div className="flex gap-5 mb-4">
@@ -168,7 +176,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
               } text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition duration-300`}
               onClick={handleLikePost}
             >
-              {isLiked ? "Liked" : "Like"}
+              {isLiked ? "Upvoted" : "Upvote "}
             </button>
             <button
               className={`${
@@ -176,7 +184,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
               } text-white font-semibold py-2 px-4 rounded hover:bg-red-700 transition duration-300`}
               onClick={handleDislikePost}
             >
-              {isDisliked ? "Disliked" : "Dislike"}
+              {isDisliked ? "Downvoted" : "Downvote"}
             </button>
           </div>
 

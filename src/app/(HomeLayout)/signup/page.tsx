@@ -32,16 +32,16 @@ const SignUpPage = () => {
       coverImage:
         "https://images.pexels.com/photos/40731/ladybug-drop-of-water-rain-leaf-40731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     };
-    console.log("object", userInfo);
+    // console.log("object", userInfo);
     registerUser(userInfo)
       .unwrap()
       .then((res) => {
-        console.log("Success:", res);
+        // console.log("Success:", res);
         Swal.fire(res.message);
         router.push("/login");
       })
       .catch((error) => {
-        console.log("Error:", error);
+        // console.log("Error:", error);
         if (error.data.message.includes("E11000 duplicate key")) {
           Swal.fire("Already Register, Please signIN");
         }

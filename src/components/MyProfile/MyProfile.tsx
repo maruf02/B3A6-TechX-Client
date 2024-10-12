@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import {
   useGetUserByIdQuery,
+  useLoginUserMutation,
+  useUpdatePasswordMutation,
   useUpdateUserByIdMutation,
 } from "@/Redux/api/baseApi";
 import { jwtDecode } from "jwt-decode";
@@ -10,6 +12,11 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { TLoginUser, TUser } from "@/types";
 
+interface ErrorResponse {
+  data?: {
+    message?: string;
+  };
+}
 const MyProfile = () => {
   // const token = localStorage.getItem("accessToken");
   // let userId = null;
@@ -34,11 +41,18 @@ const MyProfile = () => {
     refetch,
   } = useGetUserByIdQuery(userId, { skip: !userId });
   const [updateUserById] = useUpdateUserByIdMutation();
+  const [loginUser] = useLoginUserMutation();
+  const [updatePassword] = useUpdatePasswordMutation();
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isFollowerModalOpen, setFollowerModalOpen] = useState(false);
+  const [isFollowingModalOpen, setFollowingModalOpen] = useState(false);
+  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
+  const [isConfirmPasswordModalOpen, setConfirmPasswordModalOpen] =
+    useState(false);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
-
+  console.log("userData", userData);
   const { register, handleSubmit, setValue } = useForm<TUser>({
     defaultValues: {
       name: "",
@@ -89,6 +103,68 @@ const MyProfile = () => {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading user data</div>;
 
+  const openFollowerModal = () => setFollowerModalOpen(true);
+  const closeFollowerModal = () => setFollowerModalOpen(false);
+  const openFollowingModal = () => setFollowingModalOpen(true);
+  const closeFollowingModal = () => setFollowingModalOpen(false);
+
+  // password portiom
+  const openPasswordModal = () => setPasswordModalOpen(true);
+  const closePasswordModal = () => setPasswordModalOpen(false);
+  const openConfirmPasswordModal = () => setConfirmPasswordModalOpen(true);
+  const closeConfirmPasswordModal = () => setConfirmPasswordModalOpen(false);
+
+  const handlePasswordCheck = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement;
+    const email = form.email.value;
+    const password = form.password.value;
+    const userInfo = { email, password };
+    console.log("userInfo", userInfo);
+
+    try {
+      const res = await loginUser(userInfo).unwrap();
+      if (res.success) {
+        Swal.fire("password match");
+        closePasswordModal();
+        openConfirmPasswordModal();
+      }
+      console.log("res", res);
+    } catch (err) {
+      const error = err as ErrorResponse;
+      if (error.data?.message) {
+        // console.error("Login error:", err.data.message);
+        Swal.fire("Error", error.data.message as string, "error");
+      } else {
+        // console.error("Login error:", err);
+        Swal.fire("Error", "An unexpected error occurred.", "error");
+      }
+    }
+
+    // closePasswordModal();
+    // openConfirmPasswordModal();
+  };
+
+  const handlePassChange = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement;
+    const email = form.email.value;
+    const password = form.password.value;
+    const userInfo = { email, password };
+    console.log("userInfo", userInfo);
+    try {
+      const res = await updatePassword(userInfo).unwrap();
+      if (res.success) {
+        Swal.fire("Success", "Password updated successfully!", "success");
+        setConfirmPasswordModalOpen(false);
+      }
+    } catch {
+      Swal.fire("Error", "Failed to update password.", "error");
+    }
+  };
+
   return (
     <div className="mx-auto">
       <div className="card card-compact text-white bg-gray-400 max-w-2xl shadow-xl mx-auto">
@@ -104,11 +180,112 @@ const MyProfile = () => {
           </h2>
           <h2 className="card-title">
             Total Followers: {userData?.data?.follower?.length || 0}
+            <button className="btn btn-sm" onClick={openFollowerModal}>
+              see all followers
+            </button>
           </h2>
           <h1 className="card-title">
             Total Following: {userData?.data?.following?.length || 0}
+            <button className="btn btn-sm" onClick={openFollowingModal}>
+              see all following
+            </button>
           </h1>
+          <h1 className="card-title">
+            Change Password:{" "}
+            <button onClick={openPasswordModal} className="btn btn-sm">
+              Change password
+            </button>
+          </h1>
+          {/* change password modal option */}
+          {isPasswordModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <form onSubmit={handlePasswordCheck}>
+                <div className="bg-black rounded-lg p-6 w-96">
+                  <h2 className="text-2xl font-bold mb-4">
+                    Enter New Password
+                  </h2>
+                  <div>
+                    <label>Email</label>
+                    <input
+                      type="text"
+                      name="email"
+                      readOnly
+                      defaultValue={userData?.data?.email}
+                      className="input input-bordered max-w-xl mb-4 bg-white text-black ml-20"
+                    />
+                  </div>
+                  <div>
+                    <label>Current Password:</label>
+                    <input
+                      type="password"
+                      name="password"
+                      className="input input-bordered max-w-xl mb-4 bg-white text-black ml-2"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <button
+                      onClick={closePasswordModal}
+                      className="mr-4 px-4 py-2 bg-gray-300 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      // onClick={() => {
+                      //   closePasswordModal();
+                      //   openConfirmPasswordModal(); // Open second modal
+                      // }}
+                      // onClick={handlePasswordCheck}
+                      className="px-4 py-2 bg-primary text-white rounded-lg"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          )}
 
+          {isConfirmPasswordModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <form onSubmit={handlePassChange}>
+                <div className="bg-black rounded-lg p-6 w-96">
+                  <h2 className="text-2xl font-bold mb-4">Update Password</h2>
+                  <div>
+                    <label>Email</label>
+                    <input
+                      type="text"
+                      name="email"
+                      readOnly
+                      defaultValue={userData?.data?.email}
+                      className="input input-bordered max-w-xl mb-4 bg-white text-black ml-20"
+                    />
+                  </div>
+                  <div>
+                    <label>New Password:</label>
+                    <input
+                      type="newPassword"
+                      name="password"
+                      className="input input-bordered max-w-xl mb-4 bg-white text-black ml-2"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <button
+                      onClick={closeConfirmPasswordModal}
+                      className="mr-4 px-4 py-2 bg-gray-300 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                    <button className="px-4 py-2 bg-primary text-white rounded-lg">
+                      Update
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          )}
+          {/* change password modal option */}
           <img
             src={
               userData?.data?.profileImage || "https://via.placeholder.com/150"
@@ -202,6 +379,82 @@ const MyProfile = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {isFollowerModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-2xl font-bold mb-4">Followers</h2>
+            <div className="space-y-4">
+              {userData?.data?.followerP?.length ? (
+                userData.data.followerP.map((follower: TUser) => (
+                  <div
+                    key={follower._id}
+                    className="flex items-center space-x-4"
+                  >
+                    <img
+                      src={
+                        follower.profileImage ||
+                        "https://via.placeholder.com/50"
+                      }
+                      alt="Follower Profile"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <span>{follower.name || "Unknown"}</span>
+                  </div>
+                ))
+              ) : (
+                <p>No followers found.</p>
+              )}
+            </div>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={closeFollowerModal}
+                className="px-4 py-2 bg-primary text-white rounded-lg"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isFollowingModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-2xl font-bold mb-4">Following</h2>
+            <div className="space-y-4">
+              {userData?.data?.followingP?.length ? (
+                userData.data.followingP.map((following: TUser) => (
+                  <div
+                    key={following._id}
+                    className="flex items-center space-x-4"
+                  >
+                    <img
+                      src={
+                        following.profileImage ||
+                        "https://via.placeholder.com/50"
+                      }
+                      alt="Following Profile"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <span>{following.name || "Unknown"}</span>
+                  </div>
+                ))
+              ) : (
+                <p>No following found.</p>
+              )}
+            </div>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={closeFollowingModal}
+                className="px-4 py-2 bg-primary text-white rounded-lg"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

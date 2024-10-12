@@ -7,11 +7,11 @@ import { jwtDecode } from "jwt-decode";
 import { TLoginUser } from "@/types";
 
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
   // const accessToken = localStorage.getItem("accessToken");
-  // const role = accessToken ? jwtDecode(accessToken).role : null;
+  // const role = accessToken ? jwtDecode<TLoginUser>(accessToken).role : null;
 
   // useEffect(() => {
   //   // Check if the access token exists in localStorage
@@ -29,27 +29,30 @@ const Navbar = () => {
     if (accessToken) {
       try {
         const decodedToken = jwtDecode<TLoginUser>(accessToken);
-        setIsLoggedIn(true);
+        // setIsLoggedIn(true);
         setRole(decodedToken.role);
+        router.refresh();
       } catch (error) {
         console.error("Error decoding token:", error);
-        setIsLoggedIn(false);
+        // setIsLoggedIn(false);
       }
     } else {
-      setIsLoggedIn(false);
+      // setIsLoggedIn(false);
     }
   }, []);
-
+  // console.log("role from navbar", role);
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/logout", {
-        method: "POST",
-        credentials: "include", // Ensure cookies are sent with the request
-      });
+      const response = await fetch(
+        "https://techx-server-five.vercel.app/api/auth/logout",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
       if (response.ok) {
-        // Handle successful logout
         localStorage.removeItem("accessToken");
-        setIsLoggedIn(false);
+        // setIsLoggedIn(false);
         router.push("/login");
       }
     } catch (error) {
@@ -110,7 +113,7 @@ const Navbar = () => {
               {menu}
             </ul>
           </div>
-          <a className="btn btn-ghost text-xl">daisyUI</a>
+          <a className="btn btn-ghost text-xl">TechX</a>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">{menu}</ul>
@@ -133,7 +136,7 @@ const Navbar = () => {
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
-              {isLoggedIn ? (
+              {role ? (
                 <>
                   <li>
                     <Link href={`/profile/${role}`}>Profile</Link>

@@ -1,7 +1,9 @@
 "use client";
+import ActivityPage from "@/components/Admin/ActivityPage/ActivityPage";
 import AllPosts from "@/components/Admin/AllPosts/AllPosts";
 import AllUsers from "@/components/Admin/AllUsers/AllUsers";
-import GraphSummary from "@/components/Admin/GraphSummary/GraphSummary";
+import { GraphSummary } from "@/components/Admin/GraphSummary/GraphSummary";
+
 import PaymentHistory from "@/components/Admin/PaymentHistory/PaymentHistory";
 import { useGetUserByIdQuery } from "@/Redux/api/baseApi";
 import { TLoginUser } from "@/types";
@@ -68,6 +70,12 @@ const AdminHomePage = () => {
             <GraphSummary />
           </div>
         );
+      case "Activity":
+        return (
+          <div>
+            <ActivityPage />
+          </div>
+        );
 
       default:
         return (
@@ -113,7 +121,7 @@ const AdminHomePage = () => {
                 "Users",
                 "Payment",
                 "Summary",
-                // "Follow",
+                "Activity",
                 // "Following",
               ]}
               value={selectedOption}

@@ -13,6 +13,8 @@ import { verifyPayment } from "../Payments/Isverify";
 import { useRouter } from "next/navigation";
 import { message } from "antd";
 import { TLoginUser, TPost } from "@/types";
+import jsPDF from "jspdf";
+import { motion } from "framer-motion";
 
 const HomePage = () => {
   const [page, setPage] = useState(1);
@@ -171,12 +173,66 @@ const HomePage = () => {
     }
   };
 
+  const truncateContent = (content: string, wordLimit: number) => {
+    const words = content.split(" ");
+    if (words.length <= wordLimit) {
+      return content;
+    }
+    return words.slice(0, wordLimit).join(" ") + "...";
+  };
+
+  const handleSeeMore = () => {
+    Swal.fire(
+      "For seeing full content with like, post, comment please hit the see details Button"
+    );
+  };
+
+  const generatePdf = (post: TPost) => {
+    const doc = new jsPDF();
+
+    const convertHtmlToPlainText = (html: string) => {
+      const tempElement = document.createElement("div");
+      tempElement.innerHTML = html;
+      return tempElement.innerText || "";
+    };
+
+    doc.setFontSize(16);
+    doc.text("Post Details", 20, 20);
+
+    doc.setFontSize(14);
+    doc.text(`Title: ${post.name}`, 20, 30);
+
+    doc.setFontSize(12);
+    doc.text(`Category: ${post.category}`, 20, 40);
+    doc.text(`Type: ${post.type}`, 20, 50);
+
+    doc.setFontSize(12);
+    doc.text("Content:", 20, 60);
+
+    const plainTextContent = convertHtmlToPlainText(post.post);
+    const contentLines = doc.splitTextToSize(plainTextContent, 180);
+    doc.text(contentLines, 20, 70);
+
+    if (post.images) {
+      const imageYPosition = 100 + 72;
+      doc.addImage(post.images, "JPEG", 20, imageYPosition, 160, 90);
+    }
+
+    doc.setFontSize(10);
+    doc.text(
+      "Generated on: " + new Date().toLocaleString(),
+      20,
+      doc.internal.pageSize.height - 10
+    );
+
+    doc.save(`${post.name}.pdf`);
+  };
+
   return (
     <div className="mx-auto my-2 max-w-3xl mt-5">
       <div>
         <HomePostCreate />
       </div>
-      {/* Search Input Field */}
 
       <div className="flex gap-5 w-full">
         <div className="mb-4 flex justify-between">
@@ -188,7 +244,7 @@ const HomePage = () => {
             className="input input-bordered w-full mr-2"
           />
         </div>
-        {/* Category Dropdown */}
+
         <div className="mb-4">
           <select
             value={selectedCategory}
@@ -221,72 +277,101 @@ const HomePage = () => {
 
       {/* Display posts */}
       {filteredPosts.map((post: TPost, index: number) => (
-        <div
-          key={`${post._id}-${index}`}
-          className="card card-compact bg-gray-500 w-full shadow-xl mb-4"
+        <motion.div
+          key={post._id + index}
+          className=" mb-2"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 2 }}
         >
-          <div className="flex justify-between">
-            <div className="flex items-center mb-4 p-4">
-              <img
-                className="h-10 w-10 rounded-full"
-                src={
-                  post.userIdP.profileImage || "https://via.placeholder.com/150"
-                }
-                alt="User"
-              />
-              <div className="ml-3">
-                <Link href={`/profileView/${post.userId}`}>
-                  <h2 className="text-lg font-semibold">{post.name}</h2>
-                </Link>
-                <p className="">
-                  {post.category} | {post.type}
-                </p>
+          <div
+            key={`${post._id}-${index}`}
+            className="card card-compact bg-gray-500 w-full shadow-xl mb-4"
+          >
+            <div className="flex justify-between">
+              <div className="flex items-center mb-4 p-4">
+                <img
+                  className="h-10 w-10 rounded-full"
+                  src={
+                    post.userIdP.profileImage ||
+                    "https://png.pngtree.com/png-vector/20230304/ourmid/pngtree-male-avator-icon-vector-png-image_6631112.png"
+                  }
+                  alt="User"
+                />
+                <div className="ml-3">
+                  <Link href={`/profileView/${post.userId}`}>
+                    <h2 className="text-lg font-semibold text-blue-700">
+                      {post.name}
+                    </h2>
+                  </Link>
+                  <p className="">
+                    {post.category} | {post.type}
+                  </p>
+                </div>
+              </div>
+              <div className="card-actions justify-end items-center mr-5">
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => generatePdf(post)}
+                >
+                  pdf
+                </button>
+                <button
+                  onClick={() => handlefollow(post)}
+                  className="btn btn-primary"
+                  disabled={followedUsers.includes(post.userId)}
+                >
+                  {followedUsers.includes(post.userId) ? "Followed" : "Follow"}
+                </button>
               </div>
             </div>
-            <div className="card-actions justify-end items-center mr-5">
-              <button
-                onClick={() => handlefollow(post)}
-                className="btn btn-primary"
-                disabled={followedUsers.includes(post.userId)}
-              >
-                {followedUsers.includes(post.userId) ? "Followed" : "Follow"}
-              </button>
-            </div>
-          </div>
-          <div className="px-4">
-            <div
-              className="mb-4 text-gray-800 py-5"
-              dangerouslySetInnerHTML={{ __html: post.post }}
-            />
-          </div>
-          {post.images && (
-            <figure className="w-full">
-              <img
-                src={post.images || "https://via.placeholder.com/600"}
-                alt="Post Image"
-                className="w-full h-64 object-cover"
+            <div className="px-4 py-5">
+              <div
+                // className="mb-4 text-gray-800 py-5"
+                // dangerouslySetInnerHTML={{ __html: post.post }}
+                dangerouslySetInnerHTML={{
+                  __html: truncateContent(post.post, 50), // Truncate to 200 words
+                }}
               />
-            </figure>
-          )}
-          <div className="card-body">
-            <div className="mb-2 flex gap-2 text-xl">
-              <h1 className="font-semibold">{post.likes?.length} Likes</h1>
-              <h1 className="font-semibold">
-                {post.dislikes?.length || 0} Dislikes
-              </h1>
+              {post.post.split(" ").length > 50 && (
+                <button
+                  onClick={handleSeeMore}
+                  className="text-blue-500 hover:underline ml-2"
+                >
+                  See More
+                </button>
+              )}
             </div>
-            {/* <Link href={`/postDetails/${post._id}`}> */}
-            <div className="card-actions justify-end">
-              <button
-                onClick={() => handlePremium(post)}
-                className="btn btn-primary"
-              >
-                See Details
-              </button>
+            {post.images && (
+              <figure className="w-full">
+                <img
+                  src={post.images || "https://via.placeholder.com/600"}
+                  alt="Post Image"
+                  className="w-full h-64 object-cover"
+                />
+              </figure>
+            )}
+            <div className="card-body">
+              <div className="mb-2 flex gap-2 text-xl">
+                <h1 className="font-semibold">{post.likes?.length} Upvote </h1>
+                <h1 className="font-semibold">
+                  {post.dislikes?.length || 0} Downvote
+                </h1>
+              </div>
+              {/* <Link href={`/postDetails/${post._id}`}> */}
+              <div className="card-actions justify-end">
+                <button
+                  onClick={() => handlePremium(post)}
+                  className="btn btn-primary"
+                >
+                  See Details
+                </button>
+              </div>
+              {/* </Link> */}
             </div>
-            {/* </Link> */}
           </div>
-        </div>
+        </motion.div>
       ))}
 
       {/* Loading Spinner */}
