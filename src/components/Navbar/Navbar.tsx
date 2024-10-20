@@ -2,45 +2,31 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-
+import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { TLoginUser } from "@/types";
 
 const Navbar = () => {
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
-  // const accessToken = localStorage.getItem("accessToken");
-  // const role = accessToken ? jwtDecode<TLoginUser>(accessToken).role : null;
+  // const LoggedIn = localStorage.getItem("isLoggedIn");
 
-  // useEffect(() => {
-  //   // Check if the access token exists in localStorage
-  //   const accessToken = localStorage.getItem("accessToken");
-  //   if (accessToken) {
-  //     setIsLoggedIn(true);
-  //     setRole(jwtDecode<TLoginUser>(accessToken).role);
-  //   } else {
-  //     setIsLoggedIn(false);
-  //   }
-  // }, []);
+  const accessToken =
+    Cookies.get("accessToken") || localStorage.getItem("accessToken");
+  const LoggedIn = localStorage.getItem("isLoggedIn");
+
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (accessToken) {
-      try {
-        const decodedToken = jwtDecode<TLoginUser>(accessToken);
-        // setIsLoggedIn(true);
-        setRole(decodedToken.role);
-        router.refresh();
-      } catch (error) {
-        console.error("Error decoding token:", error);
-        // setIsLoggedIn(false);
-      }
-    } else {
-      // setIsLoggedIn(false);
+    if (accessToken && LoggedIn === "true") {
+      const decodedToken = jwtDecode<TLoginUser>(accessToken);
+      setRole(decodedToken.role);
+      setIsLoggedIn(true);
+    }
+    if (!accessToken && LoggedIn === "false") {
+      setIsLoggedIn(false);
     }
   }, []);
-  // console.log("role from navbar", role);
+
   const handleLogout = async () => {
     try {
       const response = await fetch(
@@ -52,14 +38,15 @@ const Navbar = () => {
       );
       if (response.ok) {
         localStorage.removeItem("accessToken");
-        // setIsLoggedIn(false);
+        localStorage.setItem("isLoggedIn", "false");
+        setIsLoggedIn(false);
         router.push("/login");
       }
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
-
+  // console.log("isLoggedIn", isLoggedIn);
   const menu = (
     <>
       <li>
@@ -81,6 +68,26 @@ const Navbar = () => {
         <Link href={`/profile/${role}`} className="activeNavLink">
           <button>Profile</button>
         </Link>
+      </li>
+      <li>
+        <Link href={`/profile/${role}`} className="activeNavLink">
+          <button>Login</button>
+        </Link>
+      </li>
+      <li>
+        {isLoggedIn ? (
+          <li>
+            <button onClick={handleLogout} className="activeNavLink">
+              Logout
+            </button>
+          </li>
+        ) : (
+          <li>
+            <Link href="/login" className="activeNavLink">
+              <button>Login</button>
+            </Link>
+          </li>
+        )}
       </li>
     </>
   );
@@ -136,6 +143,22 @@ const Navbar = () => {
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
+              {/* {isLoggedIn ? (
+                <>
+                  <li>
+                    <Link href={`/profile/${role}`}>Profile</Link>
+                  </li>
+                  <li>
+                    <button onClick={handleLogout} className="w-full text-left">
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link href="/login">Login</Link>
+                </li>
+              )} */}
               {role ? (
                 <>
                   <li>
