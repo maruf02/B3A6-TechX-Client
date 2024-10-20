@@ -66,6 +66,7 @@ export type TPost = {
   images: string;
   likes: string[];
   dislikes: string[];
+  views: string[];
   isDeleted?: boolean;
 };
 

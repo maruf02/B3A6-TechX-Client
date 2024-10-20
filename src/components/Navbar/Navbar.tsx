@@ -12,9 +12,33 @@ const Navbar = () => {
   const [role, setRole] = useState<string | null>(null);
   // const LoggedIn = localStorage.getItem("isLoggedIn");
 
-  const accessToken =
-    Cookies.get("accessToken") || localStorage.getItem("accessToken");
-  const LoggedIn = localStorage.getItem("isLoggedIn");
+  // const accessToken =
+  //   Cookies.get("accessToken") ||
+  //   (typeof window !== "undefined"
+  //     ? localStorage.getItem("accessToken")
+  //     : localStorage.getItem("accessToken"));
+  // const LoggedIn =
+  //   typeof window !== "undefined"
+  //     ? localStorage.getItem("isLoggedIn")
+  //     : localStorage.getItem("isLoggedIn");
+
+  let accessToken;
+  let LoggedIn;
+
+  if (typeof window !== "undefined") {
+    // Only run this code on the client side
+    accessToken =
+      localStorage.getItem("accessToken") || Cookies.get("accessToken");
+    LoggedIn = localStorage.getItem("isLoggedIn");
+  } else {
+    // Handle the case when running on the server (e.g., SSR or SSG)
+    accessToken = null; // Or some fallback value
+    LoggedIn = null; // Or some fallback value
+  }
+
+  // const accessToken =
+  //   Cookies.get("accessToken") || localStorage.getItem("accessToken");
+  // const LoggedIn = localStorage.getItem("isLoggedIn");
 
   useEffect(() => {
     if (accessToken && LoggedIn === "true") {
@@ -25,7 +49,7 @@ const Navbar = () => {
     if (!accessToken && LoggedIn === "false") {
       setIsLoggedIn(false);
     }
-  }, []);
+  }, [accessToken, LoggedIn]);
 
   const handleLogout = async () => {
     try {
@@ -46,7 +70,12 @@ const Navbar = () => {
       console.error("Logout failed:", error);
     }
   };
-  // console.log("isLoggedIn", isLoggedIn);
+
+  console.log("isLoggedIn", isLoggedIn);
+  console.log("role", role);
+  console.log("accesstoken", accessToken);
+  console.log("loging", LoggedIn);
+
   const menu = (
     <>
       <li>
@@ -70,23 +99,14 @@ const Navbar = () => {
         </Link>
       </li>
       <li>
-        <Link href={`/profile/${role}`} className="activeNavLink">
-          <button>Login</button>
-        </Link>
-      </li>
-      <li>
         {isLoggedIn ? (
-          <li>
-            <button onClick={handleLogout} className="activeNavLink">
-              Logout
-            </button>
-          </li>
+          <button onClick={handleLogout} className="activeNavLink">
+            Logout
+          </button>
         ) : (
-          <li>
-            <Link href="/login" className="activeNavLink">
-              <button>Login</button>
-            </Link>
-          </li>
+          <Link href="/login" className="activeNavLink">
+            <button>Login</button>
+          </Link>
         )}
       </li>
     </>

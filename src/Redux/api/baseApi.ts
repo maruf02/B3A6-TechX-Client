@@ -3,7 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://techx-server-five.vercel.app/api",
+    baseUrl: "http://localhost:5000/api",
+    // baseUrl: "https://techx-server-five.vercel.app/api",
     credentials: "include",
   }),
   tagTypes: ["Auth", "Post"],
@@ -97,6 +98,21 @@ export const baseApi = createApi({
     getAllPostsMain: builder.query({
       query: () => "/posts",
     }),
+    getAllViewMain: builder.query({
+      query: () => "/postsViews/views/count",
+    }),
+    getAllLikesMain: builder.query({
+      query: () => "/likesSummary",
+    }),
+    getAllDisLikesMain: builder.query({
+      query: () => "/dislikesSummary",
+    }),
+    getTotalLikesMain: builder.query({
+      query: () => "/totalLikes",
+    }),
+    getTotalDisLikesMain: builder.query({
+      query: () => "/totalDislikes",
+    }),
     getAllPayment: builder.query({
       query: () => "/payments",
     }),
@@ -123,6 +139,14 @@ export const baseApi = createApi({
       query: (id) => ({
         url: `posts/${id}`,
         method: "DELETE",
+      }),
+    }),
+
+    addViewToPost: builder.mutation({
+      query: ({ postId, userId }) => ({
+        url: `/posts/${postId}/view`,
+        method: "POST",
+        body: { userId },
       }),
     }),
 
@@ -239,4 +263,10 @@ export const {
   useCreatePaymentMutation,
   useGetPaymentByUserIdQuery,
   useFollowUserMutation,
+  useAddViewToPostMutation,
+  useGetAllDisLikesMainQuery,
+  useGetAllLikesMainQuery,
+  useGetAllViewMainQuery,
+  useGetTotalDisLikesMainQuery,
+  useGetTotalLikesMainQuery,
 } = baseApi;

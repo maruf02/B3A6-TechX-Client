@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import {
+  useAddViewToPostMutation,
   useFollowUserMutation,
   useGetAllPostsQuery,
   useGetPaymentByUserIdQuery,
@@ -15,6 +16,7 @@ import { message } from "antd";
 import { TLoginUser, TPost } from "@/types";
 import jsPDF from "jspdf";
 import { motion } from "framer-motion";
+import { GrFormView } from "react-icons/gr";
 
 const HomePage = () => {
   const [page, setPage] = useState(1);
@@ -28,7 +30,7 @@ const HomePage = () => {
   const { data: fetchedPosts, isFetching } = useGetAllPostsQuery(page);
   const [followUser] = useFollowUserMutation();
   const [followedUsers, setFollowedUsers] = useState<string[]>([]);
-
+  const [addViewToPost] = useAddViewToPostMutation();
   useEffect(() => {
     if (fetchedPosts && fetchedPosts.length > 0) {
       setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]);
@@ -109,7 +111,7 @@ const HomePage = () => {
     setFilteredPosts(posts);
   };
   // const isVerified = verifyPayment(payment.endTime);
-  const handlePremium = (post: TPost) => {
+  const handlePremium = async (post: TPost) => {
     const postUserID = post.userId;
     const myId = userId;
     // console.log("postUserID", postUserID.profileImage);
@@ -133,13 +135,16 @@ const HomePage = () => {
             }
           });
         } else {
+          await addViewToPost({ postId: post._id, userId: myId });
           router.push(`/postDetails/${post._id}`);
         }
       } else {
         Swal.fire("this is my post");
+        await addViewToPost({ postId: post._id, userId: myId });
         router.push(`/postDetails/${post._id}`);
       }
     } else {
+      await addViewToPost({ postId: post._id, userId: myId });
       router.push(`/postDetails/${post._id}`);
     }
 
@@ -227,6 +232,10 @@ const HomePage = () => {
 
     doc.save(`${post.name}.pdf`);
   };
+
+  // *********************************************
+
+  // *********************************************
 
   return (
     <div className="mx-auto my-2 max-w-3xl mt-5">
@@ -357,6 +366,12 @@ const HomePage = () => {
                 <h1 className="font-semibold">{post.likes?.length} Upvote </h1>
                 <h1 className="font-semibold">
                   {post.dislikes?.length || 0} Downvote
+                </h1>
+                <h1 className="font-semibold flex justify-center align-middle">
+                  <span>
+                    <GrFormView className="  h-8 w-8" />
+                  </span>
+                  <span>{post.views?.length || 0}</span>
                 </h1>
               </div>
               {/* <Link href={`/postDetails/${post._id}`}> */}

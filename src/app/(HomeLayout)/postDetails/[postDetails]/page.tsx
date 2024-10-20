@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import {
   useDislikePostMutation,
@@ -9,16 +9,20 @@ import {
   usePostCommentMutation,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
+  useAddViewToPostMutation,
 } from "@/Redux/api/baseApi";
 import Swal from "sweetalert2";
 import { TComment, TLoginUser } from "@/types";
 import Link from "next/link";
+import { GrFormView } from "react-icons/gr";
+import { useRouter } from "next/navigation";
 
 type TPostDetailsParams = {
   postDetails: string;
 };
 
 const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
+  const router = useRouter();
   const postId = params.postDetails;
 
   const token = localStorage.getItem("accessToken");
@@ -29,6 +33,8 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
     const decodedToken = jwtDecode<TLoginUser>(token);
     userId = decodedToken._id;
     name = decodedToken.name;
+  } else {
+    router.push("/login");
   }
 
   const {
@@ -45,6 +51,8 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
     refetch: refetchComments,
   } = useGetCommentsByPostIdQuery(postId, { skip: !postId });
 
+  const [addViewToPost] = useAddViewToPostMutation();
+
   const [commentText, setCommentText] = useState("");
   const [editCommentId, setEditCommentId] = useState<string | null>(null);
   const [editedCommentText, setEditedCommentText] = useState("");
@@ -57,6 +65,9 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
 
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
+
+  const [isReplying, setIsReplying] = useState(false);
+  const [replyText, setReplyText] = useState("");
 
   const handlePostComment = async () => {
     if (!commentText.trim()) return;
@@ -124,6 +135,32 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
     }
   };
 
+  // view portion
+  useEffect(() => {
+    if (userId && postId) {
+      // Call the addViewToPost mutation when the component mounts
+      addViewToPost({ postId, userId })
+        .unwrap()
+        .then(() => console.log("View added successfully"))
+        .catch((error) => console.error("Failed to add view:", error));
+    }
+  }, [userId, postId, addViewToPost]);
+
+  const handleReplyClick = () => {
+    setIsReplying(!isReplying); // Toggle the input box
+  };
+
+  const handleReplyChange = (e) => {
+    setReplyText(e.target.value); // Update the reply text
+  };
+
+  const handleSubmitReply = () => {
+    // Handle the reply submission (e.g., send it to a server)
+    console.log("Reply submitted:", replyText);
+    setReplyText(""); // Clear the input after submission
+    setIsReplying(false); // Optionally close the input box
+  };
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading post details</div>;
 
@@ -167,6 +204,12 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
           <div className="mb-2 flex gap-2">
             <h1 className="font-semibold">{post.likes?.length} Upvote </h1>
             <h1 className="font-semibold">{post.dislikes?.length} Downvote </h1>
+            <h1 className="font-semibold flex justify-center align-middle">
+              <span>
+                <GrFormView className="  h-8 w-8" />
+              </span>
+              <span>{post.views?.length || 0}</span>
+            </h1>
           </div>
 
           <div className="flex gap-5 mb-4">
@@ -244,12 +287,32 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
                         </div>
                       ) : (
                         <div className="flex items-center justify-between">
-                          <p>
-                            <span className="text-blue-500 pr-2">
-                              {comment.userIdP.name}:
-                            </span>
-                            {comment.comment}
-                          </p>
+                          <div>
+                            <p>
+                              <span className="text-blue-500 pr-2">
+                                {comment.userIdP.name}:
+                              </span>
+                              {comment.comment}{" "}
+                              <span>
+                                <button onClick={handleReplyClick}>
+                                  {isReplying ? "Cancel" : "Reply"}
+                                </button>
+                                {isReplying && (
+                                  <div>
+                                    <input
+                                      type="text"
+                                      value={replyText}
+                                      onChange={handleReplyChange}
+                                      placeholder="Type your reply..."
+                                    />
+                                    <button onClick={handleSubmitReply}>
+                                      Submit
+                                    </button>
+                                  </div>
+                                )}
+                              </span>
+                            </p>
+                          </div>
                           {comment.userId === userId && (
                             <div className="flex gap-2">
                               <button
