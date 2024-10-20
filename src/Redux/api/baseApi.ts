@@ -201,6 +201,17 @@ export const baseApi = createApi({
       }),
     }),
 
+    replyComment: builder.mutation({
+      query: (replyData) => ({
+        url: `/repliesComment`,
+        method: "POST",
+        body: replyData,
+      }),
+    }),
+    replyCommentByCID: builder.query({
+      query: (commentId) => `/replies/commentByCID/${commentId}`,
+    }),
+
     createPayment: builder.mutation({
       query: (BookingData) => ({
         url: "/payment",
@@ -269,4 +280,6 @@ export const {
   useGetAllViewMainQuery,
   useGetTotalDisLikesMainQuery,
   useGetTotalLikesMainQuery,
+  useReplyCommentMutation,
+  useReplyCommentByCIDQuery,
 } = baseApi;

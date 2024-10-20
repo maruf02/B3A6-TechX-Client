@@ -11,14 +11,12 @@ import {
   useDeleteCommentMutation,
   useAddViewToPostMutation,
   useReplyCommentMutation,
-  useReplyCommentByCIDQuery,
 } from "@/Redux/api/baseApi";
 import Swal from "sweetalert2";
 import { TComment, TLoginUser } from "@/types";
 import Link from "next/link";
 import { GrFormView } from "react-icons/gr";
 import { useRouter } from "next/navigation";
-import { button } from "framer-motion/client";
 
 type TPostDetailsParams = {
   postDetails: string;
@@ -156,7 +154,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
 
   const [replyText, setReplyText] = useState("");
   const { data: replies, refetch: refetchReplies } =
-    useReplyCommentByCIDQuery(replyingCommentId);
+    useGetCommentsByPostIdQuery(replyingToCommentId);
 
   console.log("repliesCommentId", replyingCommentId);
   console.log("replies", replies);
@@ -170,6 +168,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
   //   setReplyText(e.target.value); // Update the reply text
   // };
   const handleSubmitReply = async (commentId: string) => {
+    setReplyingCommentId(commentId);
     const replyData = {
       userId,
       userIdP: userId,
@@ -191,14 +190,6 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
     // Swal.fire(`Reply submitted for comment ID: ${commentId},${replyText}`);
     // setReplyText(""); // Clear the input after submission
     // setReplyingToCommentId(null); // Close the input box after submission
-  };
-
-  const [showReplies, setShowReplies] = useState(false);
-
-  const handleShowReplies = (commentId: string) => {
-    setReplyingCommentId(commentId);
-    setShowReplies(true);
-    Swal.fire(`Reply submitted for comment ID: ${commentId} `);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -363,7 +354,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
                                 )}
                               </span>
                               {/* Render Replies */}
-                              {/* <span className="pl-16">
+                              <span className="pl-16">
                                 {replies && replies.length > 0 ? (
                                   replies.map((reply: TComment) => (
                                     <p key={reply._id} className="pl-4">
@@ -375,30 +366,6 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
                                 )}
                                 <p className="pl-16">Repled: mk:gjfhkgjfkgk</p>
                                 <p className="pl-16">Repled: mk:gjfhkgjfkgk</p>
-                              </span> */}
-                              <span>
-                                <button
-                                  className="pl-5"
-                                  onClick={() => handleShowReplies(comment._id)}
-                                >
-                                  {/* {showReplies ? "Hide" : "Show All"} */}
-                                  {replyingCommentId === comment._id
-                                    ? "Cancel"
-                                    : "Show all"}
-                                </button>
-                                {replyingCommentId === comment._id && (
-                                  <>
-                                    {replies && replies.length > 0 ? (
-                                      replies.map((reply: TComment) => (
-                                        <p key={reply._id} className="pl-4">
-                                          Replied: {reply.repliesComment}
-                                        </p>
-                                      ))
-                                    ) : (
-                                      <p className="pl-4">No replies yet</p>
-                                    )}
-                                  </>
-                                )}
                               </span>
                             </p>
                           </div>
