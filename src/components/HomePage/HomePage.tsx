@@ -139,7 +139,7 @@ const HomePage = () => {
           router.push(`/postDetails/${post._id}`);
         }
       } else {
-        Swal.fire("this is my post");
+        // Swal.fire("this is my post");
         await addViewToPost({ postId: post._id, userId: myId });
         router.push(`/postDetails/${post._id}`);
       }
