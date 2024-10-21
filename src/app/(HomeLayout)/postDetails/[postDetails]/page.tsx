@@ -18,7 +18,6 @@ import { TComment, TLoginUser } from "@/types";
 import Link from "next/link";
 import { GrFormView } from "react-icons/gr";
 import { useRouter } from "next/navigation";
-import { button } from "framer-motion/client";
 
 type TPostDetailsParams = {
   postDetails: string;
@@ -194,7 +193,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
   };
 
   const [showReplies, setShowReplies] = useState(false);
-
+  console.log(showReplies);
   const handleShowReplies = (commentId: string) => {
     setReplyingCommentId(commentId);
     setShowReplies(true);

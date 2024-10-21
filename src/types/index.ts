@@ -31,6 +31,7 @@ export type TComment = {
   name: string;
   postId: string;
   comment: string;
+  repliesComment: string;
   isDeleted?: boolean;
 };
 

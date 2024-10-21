@@ -16,13 +16,24 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+interface Like {
+  date: string;
+  likes: number; // Assuming likes is a number
+}
+
+interface Dislike {
+  date: string;
+  dislikes: number; // Assuming dislikes is a number
+}
+
 const LikeDislikeGrapgSummary: React.FC = () => {
   const { data: likesData = [] } = useGetAllLikesMainQuery(undefined);
   const { data: dislikesData = [] } = useGetAllDisLikesMainQuery(undefined);
 
   // Combine likes and dislikes data by date
-  const mergedData = likesData.map((like: any) => {
-    const dislike = dislikesData.find((d: any) => d.date === like.date) || {};
+  const mergedData = likesData.map((like: Like) => {
+    const dislike =
+      dislikesData.find((d: Dislike) => d.date === like.date) || {};
     return {
       date: like.date,
       likes: like.likes || 0,
