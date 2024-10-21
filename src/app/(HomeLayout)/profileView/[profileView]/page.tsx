@@ -86,10 +86,10 @@ const ProfileViewPage = ({ params }: { params: TPostDetailsParams }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto min-h-[7000px] mt-2 bg-[#705C53] ">
       <div className="w-full h-full min-h-screen  ">
         {/* cover image */}
-        <div className="w-full h-96  rounded-2xl ">
+        <div className="w-full h-96  rounded-2xl  ">
           <img
             src={
               userData?.data?.coverImage ||
@@ -114,7 +114,7 @@ const ProfileViewPage = ({ params }: { params: TPostDetailsParams }) => {
         {/* different option */}
         <div className="w-full lg:w-4/12 h-28  relative lg:left-[24%] -top-24 lg:-top-56">
           <div className="flex justify-between">
-            <div className="flex text-4xl font-bold pb-4   h-1/2">
+            <div className="flex text-4xl font-bold pb-4 text-blue-700 uppercase  h-1/2">
               {userData?.data?.name}{" "}
               <span>
                 {isVerify === "yes" ? (

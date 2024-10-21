@@ -220,6 +220,13 @@ export const baseApi = createApi({
       }),
     }),
 
+    deleteUser: builder.mutation({
+      query: (userId: string) => ({
+        url: `/auth/users/${userId}`,
+        method: "DELETE",
+      }),
+    }),
+
     getPaymentByUserId: builder.query({
       query: (userId: string) => `/payments/user/${userId}`,
     }),
@@ -282,4 +289,5 @@ export const {
   useGetTotalLikesMainQuery,
   useReplyCommentMutation,
   useReplyCommentByCIDQuery,
+  useDeleteUserMutation,
 } = baseApi;

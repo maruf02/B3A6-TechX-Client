@@ -16,7 +16,7 @@ const ProfileViewProfile: React.FC<ProfilePostProps> = ({ userId }) => {
 
   return (
     <div className="mx-auto">
-      <div className="card card-compact text-white bg-gray-400 max-w-2xl shadow-xl mx-auto">
+      <div className="card card-compact text-black bg-[#B7B7B7] max-w-2xl shadow-xl mx-auto">
         <div className="card-body">
           <h2 className="card-title">
             {userData?.data?.name || "Name not available"}

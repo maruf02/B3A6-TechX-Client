@@ -197,16 +197,16 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
   const handleShowReplies = (commentId: string) => {
     setReplyingCommentId(commentId);
     setShowReplies(true);
-    Swal.fire(`Reply submitted for comment ID: ${commentId} `);
+    // Swal.fire(`Reply submitted for comment ID: ${commentId} `);
   };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading post details</div>;
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto mt-10 pb-28">
       {post ? (
-        <div className="max-w-2xl mx-auto bg-white border rounded-lg shadow-md p-5">
+        <div className="max-w-2xl mx-auto bg-[#B7B7B7]  border rounded-lg shadow-md p-5">
           <div className="flex items-center mb-4">
             <img
               className="h-10 w-10 rounded-full"
@@ -222,7 +222,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
                   {post.name}
                 </h2>
               </Link>
-              <p className="text-gray-500">
+              <p className="text-black">
                 {post.category} | {post.type}
               </p>
             </div>
@@ -240,7 +240,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
             className="w-full h-60 object-cover mb-4 rounded-md"
           />
 
-          <div className="mb-2 flex gap-2">
+          <div className="mb-2 flex gap-2 text-black">
             <h1 className="font-semibold">{post.likes?.length} Upvote </h1>
             <h1 className="font-semibold">{post.dislikes?.length} Downvote </h1>
             <h1 className="font-semibold flex justify-center align-middle">
@@ -271,15 +271,15 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
           </div>
 
           {/* Comments Section */}
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-2">Comments</h2>
+          <div className="mt-4 ">
+            <h2 className="text-xl font-semibold mb-2 text-black">Comments</h2>
             <div className="flex gap-2 mb-4">
               <input
                 type="text"
                 placeholder="Type your comment"
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                className="input input-bordered input-info w-full bg-white"
+                className="input input-bordered input-info w-full bg-white text-black"
               />
               <button
                 className="btn btn-primary"
@@ -306,16 +306,17 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
                             onChange={(e) =>
                               setEditedCommentText(e.target.value)
                             }
-                            className="input input-bordered w-full"
+                            placeholder="Write your reply"
+                            className="input input-bordered input-sm w-full input-info bg-white text-black"
                           />
                           <button
-                            className="btn btn-primary"
+                            className="btn btn-primary btn-sm"
                             onClick={() => handleUpdateComment(comment._id)}
                           >
                             Update
                           </button>
                           <button
-                            className="btn btn-secondary"
+                            className="btn btn-secondary btn-sm"
                             onClick={() => {
                               setEditCommentId(null);
                               setEditedCommentText("");
@@ -331,14 +332,26 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
                               <span className="text-blue-500 pr-2">
                                 {comment.userIdP.name}:
                               </span>
-                              {comment.comment}{" "}
+                              <span className="text-black">
+                                {" "}
+                                {comment.comment}
+                              </span>
+                            </p>
+                            {/*  Replies portion */}
+                            <div className="pl-12">
                               <span>
                                 <button
                                   onClick={() => handleReplyClick(comment._id)}
                                 >
-                                  {replyingToCommentId === comment._id
-                                    ? "Cancel"
-                                    : "Reply"}
+                                  {replyingToCommentId === comment._id ? (
+                                    <button className="text-blue-700">
+                                      Cancel
+                                    </button>
+                                  ) : (
+                                    <button className="text-blue-700">
+                                      Reply
+                                    </button>
+                                  )}
                                 </button>
                                 {replyingToCommentId === comment._id && (
                                   <div>
@@ -349,62 +362,65 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
                                         setReplyText(e.target.value)
                                       }
                                       placeholder="Type your reply..."
-                                      className="bg-white text-black"
+                                      className="input input-bordered input-sm input-info bg-white text-black"
                                     />
                                     <button
                                       onClick={() =>
                                         handleSubmitReply(comment._id)
                                       }
+                                      className="btn btn-sm btn-primary ml-2"
                                     >
                                       Submit
                                     </button>
                                   </div>
                                 )}
                               </span>
-                              {/* Render Replies */}
-                              {/* <span className="pl-16">
-                                {replies && replies.length > 0 ? (
-                                  replies.map((reply: TComment) => (
-                                    <p key={reply._id} className="pl-4">
-                                      Replied: {reply.repliesComment}
-                                    </p>
-                                  ))
-                                ) : (
-                                  <p className="pl-4">No replies yet</p>
-                                )}
-                                <p className="pl-16">Repled: mk:gjfhkgjfkgk</p>
-                                <p className="pl-16">Repled: mk:gjfhkgjfkgk</p>
-                              </span> */}
+                              {/*  Replies portion */}
                               <span>
                                 <button
                                   className="pl-5"
                                   onClick={() => handleShowReplies(comment._id)}
                                 >
                                   {/* {showReplies ? "Hide" : "Show All"} */}
-                                  {replyingCommentId === comment._id
-                                    ? "Cancel"
-                                    : "Show all"}
+                                  {replyingCommentId === comment._id ? (
+                                    ""
+                                  ) : (
+                                    <button className="text-blue-700">
+                                      Show Replies
+                                    </button>
+                                  )}
                                 </button>
                                 {replyingCommentId === comment._id && (
                                   <>
                                     {replies && replies.length > 0 ? (
                                       replies.map((reply: TComment) => (
-                                        <p key={reply._id} className="pl-4">
-                                          Replied: {reply.repliesComment}
+                                        <p
+                                          key={reply._id}
+                                          className="pl-4 text-black"
+                                        >
+                                          <span className="text-blue-700">
+                                            Replied:{" "}
+                                            <span className="px-2">
+                                              {reply.name}:
+                                            </span>
+                                          </span>
+                                          {reply.repliesComment}
                                         </p>
                                       ))
                                     ) : (
-                                      <p className="pl-4">No replies yet</p>
+                                      <p className="pl-4 text-black">
+                                        No replies yet
+                                      </p>
                                     )}
                                   </>
                                 )}
                               </span>
-                            </p>
+                            </div>
                           </div>
                           {comment.userId === userId && (
                             <div className="flex gap-2">
                               <button
-                                className="btn btn-sm btn-secondary"
+                                className="btn btn-sm btn-primary"
                                 onClick={() => {
                                   setEditCommentId(comment._id);
                                   setEditedCommentText(comment.comment);
@@ -413,7 +429,7 @@ const PostDetails = ({ params }: { params: TPostDetailsParams }) => {
                                 Edit
                               </button>
                               <button
-                                className="btn btn-sm btn-danger"
+                                className="btn btn-sm btn-secondary"
                                 onClick={() => handleDeleteComment(comment._id)}
                               >
                                 Delete

@@ -21,7 +21,9 @@ const ViewGraphSummary: React.FC = () => {
   return (
     <div>
       <div>
-        <h1 className="text-2xl text-center underline">Graph Summary:</h1>
+        <h1 className="text-4xl text-center underline text-black pt-10">
+          Views Summary:
+        </h1>
       </div>
       <div style={{ width: "100%", height: 300 }}>
         <ResponsiveContainer>
@@ -35,8 +37,8 @@ const ViewGraphSummary: React.FC = () => {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
+            <XAxis dataKey="date" tick={{ fill: "black", fontSize: 14 }} />
+            <YAxis tick={{ fill: "black", fontSize: 14 }} />
             <Tooltip />
             <Legend verticalAlign="top" wrapperStyle={{ lineHeight: "40px" }} />
             <ReferenceLine y={0} stroke="#000" />

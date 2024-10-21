@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import jsPDF from "jspdf";
 
 import Link from "next/link";
+import { GrFormView } from "react-icons/gr";
 interface ProfilePostProps {
   userId: string;
 }
@@ -67,7 +68,7 @@ const ShowPost: React.FC<ProfilePostProps> = ({ userId }) => {
   };
 
   return (
-    <div className="mx-auto my-2 max-w-3xl mt-5">
+    <div className="mx-auto my-2 max-w-3xl mt-5   min-h-screen">
       {reversedPosts.map((post: TPost) => (
         <motion.div
           key={post._id}
@@ -79,7 +80,7 @@ const ShowPost: React.FC<ProfilePostProps> = ({ userId }) => {
         >
           <div
             key={post._id}
-            className="card card-compact bg-gray-500 w-full shadow-xl mb-4"
+            className="card card-compact bg-[#B7B7B7]  w-full shadow-xl mb-4"
           >
             <div className="flex justify-between">
               <div className="flex items-center mb-4 p-4">
@@ -92,8 +93,10 @@ const ShowPost: React.FC<ProfilePostProps> = ({ userId }) => {
                   alt="User"
                 />
                 <div className="ml-3">
-                  <h2 className="text-lg font-semibold">{post.name}</h2>
-                  <p className="">
+                  <h2 className="text-lg font-semibold text-blue-700">
+                    {post.name}
+                  </h2>
+                  <p className="text-black">
                     {post.category} | {post.type}
                   </p>
                 </div>
@@ -109,7 +112,7 @@ const ShowPost: React.FC<ProfilePostProps> = ({ userId }) => {
             </div>
             <div className="px-4">
               <div
-                className="mb-4 text-gray-800 py-5"
+                className="mb-4 text-black py-5"
                 dangerouslySetInnerHTML={{ __html: post.post }}
               />
             </div>
@@ -122,11 +125,17 @@ const ShowPost: React.FC<ProfilePostProps> = ({ userId }) => {
                 />
               </figure>
             )}
-            <div className="card-body">
+            <div className="card-body text-black">
               <div className="mb-2 flex gap-2 text-xl">
                 <h1 className="font-semibold">{post.likes?.length} Upvote </h1>
                 <h1 className="font-semibold">
                   {post.dislikes?.length || 0} Downvote
+                </h1>
+                <h1 className="font-semibold flex justify-center align-middle">
+                  <span>
+                    <GrFormView className="  h-8 w-8" />
+                  </span>
+                  <span>{post.views?.length || 0}</span>
                 </h1>
               </div>
               <Link href={`/postDetails/${post._id}`}>

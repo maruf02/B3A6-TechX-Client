@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Segmented } from "antd";
+import { Segmented, Spin } from "antd";
 
 import Payments from "@/components/Payments/Payments";
 import Followers from "@/components/Followers/Followers";
@@ -46,7 +46,12 @@ const UserProfilePage = () => {
   });
 
   const isVerify = verifyPayment(payments?.data?.endTime);
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="mx-auto text-center align-middle justify-center my-16">
+        <Spin size="large" />
+      </div>
+    );
   if (error) return <div>Error loading user data</div>;
 
   const renderContent = () => {
@@ -72,8 +77,8 @@ const UserProfilePage = () => {
   if (typeof window === "undefined") return;
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="w-full h-full min-h-screen">
+    <div className="max-w-7xl mx-auto mt-2">
+      <div className="w-full h-full min-h-[7000px]">
         {/* cover image */}
         <div className="w-full h-96 rounded-2xl">
           <img
@@ -98,9 +103,9 @@ const UserProfilePage = () => {
         </div>
         {/* different option */}
         <div className="w-full lg:w-4/12 h-28 relative lg:left-[24%] -top-24 lg:-top-56">
-          <div className="flex text-4xl font-bold px-10 h-1/2">
+          <div className="flex text-4xl font-bold px-10 h-1/2 text-black uppercase ">
             {userName}
-            <span>
+            <span className="pl-2">
               {isVerify === "yes" ? (
                 <>
                   <VscVerifiedFilled className="text-blue-700" />

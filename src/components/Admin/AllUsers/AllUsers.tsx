@@ -7,10 +7,12 @@ import { useState } from "react";
 import { GrTransaction } from "react-icons/gr";
 import {
   useAddUserMutation,
+  useDeleteUserMutation,
   useGetAllUserQuery,
   useUpdateUserMutation,
 } from "@/Redux/api/baseApi";
 import { TUser } from "@/types";
+import { MdDeleteForever } from "react-icons/md";
 
 const UserManagement = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -146,15 +148,44 @@ const UserManagement = () => {
     const selectedValue = form.value;
     setSelectedBlock(selectedValue);
   };
+  const [deleteUser] = useDeleteUserMutation();
+  const handleDeleteUser = async (userId: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteUser(userId).unwrap();
+          Swal.fire("Deleted!", "Your product has been deleted.", "success");
+          refetch();
+        } catch (error) {
+          console.error("Failed to delete product:", error);
+          Swal.fire(
+            "Error!",
+            "There was an issue deleting the product.",
+            "error"
+          );
+        }
+      }
+    });
+  };
 
   return (
     <div className="container mx-auto ">
       <div className="flex justify-between pt-5">
-        <h2 className="text-2xl text-black font-semibold">User Management</h2>
+        <h2 className="text-4xl text-black font-semibold underline">
+          User Management:
+        </h2>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex text-white btn bg-[#1A4870] hover:bg-[#5B99C2] btn-md justify-between  "
+          className="flex text-white btn btn-primary hover:bg-[#5B99C2] btn-md justify-between  "
         >
           <span>
             <IoAddCircleOutline className="w-6 h-7" />
@@ -267,12 +298,20 @@ const UserManagement = () => {
         {/* edit modal */}
         {selectedUser && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-gray-400 text-black p-6 rounded-lg w-full max-w-lg">
+            <div className="bg-[#B7B7B7] text-black p-6 rounded-lg w-full max-w-lg">
               <form onSubmit={handleEditFormSubmit}>
                 <div className="flex justify-between">
                   <div className="flex justify-center pt-5 ">
                     <h1 className="text-white text-3xl ">
-                      {selectedUserId ? "Edit User" : "Add New User"}
+                      {selectedUserId ? (
+                        <p className="text-3xl text-black font-semibold text-center ">
+                          Edit User
+                        </p>
+                      ) : (
+                        <p className="text-3xl text-black font-semibold text-center ">
+                          Add New User
+                        </p>
+                      )}
                     </h1>
                   </div>
                   <button
@@ -291,24 +330,24 @@ const UserManagement = () => {
                     </div>
                   )}
                   <div>
-                    <label className="pr-16 text-white">Name:</label>
+                    <label className="pr-14 text-black">Name:</label>
                     <input
                       type="text"
                       name="nameT"
                       defaultValue={selectedUser?.name}
                       placeholder="Enter user name"
-                      className="input input-bordered input-primary w-full max-w-xs bg-[#1A4870] text-white"
+                      className="input input-bordered input-primary w-full max-w-xs input-sm   bg-white text-black"
                     />
                   </div>
                   <div>
-                    <label className="pr-16 text-white">Email:</label>
+                    <label className="pr-14 text-black">Email:</label>
                     <input
                       type="text"
                       readOnly
                       defaultValue={selectedUser?.email}
                       name="email"
                       placeholder="Enter user email"
-                      className="input input-bordered input-primary w-full max-w-xs bg-[#1A4870] text-white"
+                      className="input input-bordered input-primary w-full max-w-xs input-sm  bg-white text-black"
                     />
                   </div>
                   {/* <div>
@@ -322,21 +361,21 @@ const UserManagement = () => {
                   />
                 </div> */}
                   <div>
-                    <label className="pr-16 text-white">Phone:</label>
+                    <label className="pr-12 text-black">Phone:</label>
                     <input
                       type="number"
                       defaultValue={selectedUser?.phone}
                       name="phone"
                       placeholder="Enter user phone number"
-                      className="input input-bordered input-primary w-full max-w-xs bg-[#1A4870] text-white"
+                      className="input input-bordered input-primary w-full max-w-xs input-sm   bg-white text-black"
                     />
                   </div>
                   <div>
-                    <label className="pr-16 text-white">Role:</label>
+                    <label className="pr-16 text-black">Role:</label>
                     <select
                       onChange={handleSelectChangeRole}
                       value={selectedRole || selectedUser?.role || ""}
-                      className="select select-bordered w-full max-w-xs bg-[#1A4870] text-white"
+                      className="select select-bordered w-full max-w-xs select-sm input-primary bg-white text-black"
                     >
                       <option value="" disabled>
                         Select Role
@@ -349,12 +388,12 @@ const UserManagement = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="pr-10 text-white">IsBlock?:</label>
+                    <label className="pr-10 text-black">IsBlock?:</label>
                     <select
                       onChange={handleSelectChangeIsBlock}
                       value={selectedBlock || selectedUser?.isBlock || ""}
                       // defaultValue={selectedCar?.color}
-                      className="select select-bordered w-full max-w-xs bg-[#1A4870] text-white"
+                      className="select select-bordered w-full max-w-xs select-sm input-primary bg-white text-black"
                     >
                       <option value="" disabled>
                         Select Block Status
@@ -368,16 +407,16 @@ const UserManagement = () => {
                   </div>
 
                   <div className="flex flex-row align-middle">
-                    <label className="pr-12  text-white">Address:</label>
+                    <label className="pr-10  text-black">Address:</label>
                     <textarea
                       name="address"
                       defaultValue={selectedUser?.address}
-                      className="textarea textarea-bordered w-full max-w-xs bg-[#1A4870] text-white"
+                      className="textarea textarea-bordered w-full max-w-xs   input-primary bg-white text-black"
                       placeholder="address"
                     ></textarea>
                   </div>
                   <div className="flex justify-center my-5  ">
-                    <button className="flex text-white btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-full text-2xl pb-1 ">
+                    <button className="flex text-black btn hover:bg-[#1A4870] bg-[#5B99C2] btn-md justify-center w-full text-2xl pb-1 ">
                       Edit
                     </button>
                   </div>
@@ -398,6 +437,7 @@ const UserManagement = () => {
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
+              <th>isBlock?</th>
               <th>Phone</th>
               <th>Address</th>
               <th>actions</th>
@@ -412,7 +452,7 @@ const UserManagement = () => {
                 <>
                   <tr key={user._id} className="hover:bg-gray-300">
                     <td>
-                      <div className="flex items-center gap-3  ">
+                      <div className="flex items-center gap-3 text-black ">
                         <div className="avatar">
                           <div className="mask mask-squircle h-12 w-12">
                             {user.profileImage ? (
@@ -436,44 +476,61 @@ const UserManagement = () => {
                           </div>
                         </div>
                         <div>
-                          <div className="font-semibold">{user.name}</div>
+                          <div className="font-semibold text-black">
+                            {user.name}
+                          </div>
                         </div>
                       </div>
                     </td>
                     <td>
                       <div>
-                        <div className="font-semibold">{user.email}</div>
+                        <div className="font-semibold text-black">
+                          {user.email}
+                        </div>
                       </div>
                     </td>
                     <td>
                       <div>
-                        <div className="font-semibold">{user.role}</div>
+                        <div className="font-semibold text-black">
+                          {user.role}
+                        </div>
                       </div>
                     </td>
                     <td>
                       <div>
-                        <div className="font-semibold">{user.phone}</div>
+                        <div className="font-semibold text-black">
+                          {user.isBlock}
+                        </div>
                       </div>
                     </td>
                     <td>
                       <div>
-                        <div className="font-semibold">{user.address}</div>
+                        <div className="font-semibold text-black">
+                          {user.phone}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <div className="font-semibold text-black">
+                          {user.address}
+                        </div>
                       </div>
                     </td>
                     <th>
                       <div className="space-x-0">
                         <button
                           onClick={() => handleEditUser(user._id)}
-                          className="btn btn-ghost btn-sm  "
+                          className="btn btn-ghost btn-sm  text-black"
                         >
                           <GrTransaction className="w-6 h-6 " />
                         </button>
-                        {/* <button
+                        <button
                           onClick={() => handleDeleteUser(user._id)}
                           className="btn btn-ghost btn-sm"
                         >
                           <MdDeleteForever className="w-6 h-6 text-red-700 " />
-                        </button> */}
+                        </button>
                       </div>
                     </th>
                   </tr>

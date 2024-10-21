@@ -243,7 +243,7 @@ const HomePage = () => {
         <HomePostCreate />
       </div>
 
-      <div className="flex gap-5 w-full">
+      {/* <div className="flex gap-5 w-full">
         <div className="mb-4 flex justify-between">
           <input
             type="text"
@@ -266,10 +266,10 @@ const HomePage = () => {
             <option value="Engineering">Engineering</option>
             <option value="AI">AI</option>
           </select>
-        </div>
+        </div> */}
 
-        {/* Sort By Dropdown */}
-        <div className="mb-4">
+      {/* Sort By Dropdown */}
+      {/* <div className="mb-4">
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
@@ -280,6 +280,41 @@ const HomePage = () => {
           </select>
         </div>
         <button onClick={handleReset} className="btn btn-secondary ml-2">
+          Reset
+        </button>
+      </div> */}
+
+      <div className="flex gap-5 w-full mb-4">
+        <input
+          type="text"
+          placeholder="Search posts..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="input input-bordered input-primary input-sm w-full mr-2 text-black bg-[#705C53]"
+        />
+
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="input input-bordered input-primary input-sm w-full text-black bg-[#705C53]"
+        >
+          <option value="">All Categories</option>
+          <option value="Web">Web</option>
+          <option value="Software">Software</option>
+          <option value="Engineering">Engineering</option>
+          <option value="AI">AI</option>
+        </select>
+
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="input input-bordered input-primary input-sm w-full text-black bg-[#705C53]"
+        >
+          <option value="">Sort By</option>
+          <option value="mostLikes">Most Likes</option>
+        </select>
+
+        <button onClick={handleReset} className="btn btn-sm btn-secondary ml-2">
           Reset
         </button>
       </div>
@@ -296,7 +331,7 @@ const HomePage = () => {
         >
           <div
             key={`${post._id}-${index}`}
-            className="card card-compact bg-gray-500 w-full shadow-xl mb-4"
+            className="card card-compact  bg-[#B7B7B7] w-full shadow-xl mb-4"
           >
             <div className="flex justify-between">
               <div className="flex items-center mb-4 p-4">
@@ -310,11 +345,11 @@ const HomePage = () => {
                 />
                 <div className="ml-3">
                   <Link href={`/profileView/${post.userId}`}>
-                    <h2 className="text-lg font-semibold text-blue-700">
+                    <h2 className="text-lg font-semibold text-blue-700 uppercase">
                       {post.name}
                     </h2>
                   </Link>
-                  <p className="">
+                  <p className="text-black">
                     {post.category} | {post.type}
                   </p>
                 </div>
@@ -328,14 +363,14 @@ const HomePage = () => {
                 </button>
                 <button
                   onClick={() => handlefollow(post)}
-                  className="btn btn-primary"
+                  className="btn  btn-sm btn-primary"
                   disabled={followedUsers.includes(post.userId)}
                 >
                   {followedUsers.includes(post.userId) ? "Followed" : "Follow"}
                 </button>
               </div>
             </div>
-            <div className="px-4 py-5">
+            <div className="px-4 py-5 text-black">
               <div
                 // className="mb-4 text-gray-800 py-5"
                 // dangerouslySetInnerHTML={{ __html: post.post }}
@@ -361,7 +396,7 @@ const HomePage = () => {
                 />
               </figure>
             )}
-            <div className="card-body">
+            <div className="card-body text-black">
               <div className="mb-2 flex gap-2 text-xl">
                 <h1 className="font-semibold">{post.likes?.length} Upvote </h1>
                 <h1 className="font-semibold">

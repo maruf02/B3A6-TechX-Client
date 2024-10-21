@@ -167,7 +167,7 @@ const MyProfile = () => {
 
   return (
     <div className="mx-auto">
-      <div className="card card-compact text-white bg-gray-400 max-w-2xl shadow-xl mx-auto">
+      <div className="card card-compact text-black bg-[#B7B7B7] max-w-2xl shadow-xl mx-auto">
         <div className="card-body">
           <h2 className="card-title">
             Name: {userData?.data?.name || "Name not available"}
@@ -180,27 +180,36 @@ const MyProfile = () => {
           </h2>
           <h2 className="card-title">
             Total Followers: {userData?.data?.follower?.length || 0}
-            <button className="btn btn-sm" onClick={openFollowerModal}>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={openFollowerModal}
+            >
               see all followers
             </button>
           </h2>
           <h1 className="card-title">
             Total Following: {userData?.data?.following?.length || 0}
-            <button className="btn btn-sm" onClick={openFollowingModal}>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={openFollowingModal}
+            >
               see all following
             </button>
           </h1>
           <h1 className="card-title">
             Change Password:{" "}
-            <button onClick={openPasswordModal} className="btn btn-sm">
+            <button
+              onClick={openPasswordModal}
+              className="btn btn-sm btn-primary"
+            >
               Change password
             </button>
           </h1>
           {/* change password modal option */}
           {isPasswordModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50 ">
               <form onSubmit={handlePasswordCheck}>
-                <div className="bg-black rounded-lg p-6 w-96">
+                <div className="bg-[#B7B7B7] rounded-lg p-6 w-96 border border-2 border-primary">
                   <h2 className="text-2xl font-bold mb-4">
                     Enter New Password
                   </h2>
@@ -211,7 +220,7 @@ const MyProfile = () => {
                       name="email"
                       readOnly
                       defaultValue={userData?.data?.email}
-                      className="input input-bordered max-w-xl mb-4 bg-white text-black ml-20"
+                      className="input input-bordered max-w-xl mb-4 input-sm input-primary bg-white text-black ml-20"
                     />
                   </div>
                   <div>
@@ -219,7 +228,7 @@ const MyProfile = () => {
                     <input
                       type="password"
                       name="password"
-                      className="input input-bordered max-w-xl mb-4 bg-white text-black ml-2"
+                      className="input input-bordered input-sm input-primary max-w-xl mb-4 bg-white text-black ml-2"
                       required
                     />
                   </div>
@@ -249,16 +258,18 @@ const MyProfile = () => {
           {isConfirmPasswordModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
               <form onSubmit={handlePassChange}>
-                <div className="bg-black rounded-lg p-6 w-96">
-                  <h2 className="text-2xl font-bold mb-4">Update Password</h2>
+                <div className="bg-[#B7B7B7] rounded-lg p-6 w-96 border border-2 border-primary">
+                  <h2 className="text-2xl font-bold mb-4 text-black">
+                    Update Password
+                  </h2>
                   <div>
-                    <label>Email</label>
+                    <label className="text-black">Email</label>
                     <input
                       type="text"
                       name="email"
                       readOnly
                       defaultValue={userData?.data?.email}
-                      className="input input-bordered max-w-xl mb-4 bg-white text-black ml-20"
+                      className="input input-bordered max-w-xl mb-4 input-sm input-primary bg-white text-black ml-20"
                     />
                   </div>
                   <div>
@@ -266,7 +277,7 @@ const MyProfile = () => {
                     <input
                       type="newPassword"
                       name="password"
-                      className="input input-bordered max-w-xl mb-4 bg-white text-black ml-2"
+                      className="input input-bordered max-w-xl mb-4 input-sm input-primary bg-white text-black ml-6"
                       required
                     />
                   </div>
@@ -310,39 +321,43 @@ const MyProfile = () => {
         </button>
       </div>
 
-      {/* Simple Modal */}
+      {/* Simple Modal  update all info portion*/}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-2xl font-bold mb-4">Update Profile</h2>
+          <div className="bg-[#B7B7B7] rounded-lg p-6 w-96 border border-2 border-primary">
+            <h2 className="text-2xl font-bold mb-4 text-black">
+              Update Profile
+            </h2>
             <form onSubmit={handleSubmit(onSubmit)} className="text-black">
               <div>
-                <label>Name</label>
+                <label>Name:</label>
                 <input
                   type="text"
                   {...register("name", { required: true })}
-                  className="input input-bordered max-w-xl mb-4 bg-white text-black"
+                  className="input input-bordered input-sm input-primary max-w-xl mb-4 bg-white text-black ml-2"
                 />
               </div>
-              <div>
-                <label>Email</label>
+              {/* <div>
+                <label>Email:</label>
                 <input
                   type="email"
                   {...register("email")}
-                  className="input input-bordered max-w-xl mb-4 bg-white text-black"
+                  className="input input-bordered input-sm input-primary ml-4 max-w-xl mb-4 bg-white text-black"
                   readOnly
+                  defaultValue={userData?.data?.email || ""}
                 />
-              </div>
+              </div> */}
+
               <div>
-                <label>Phone</label>
+                <label>Phone:</label>
                 <input
                   type="text"
                   {...register("phone", { required: true })}
-                  className="input input-bordered max-w-xl mb-4 bg-white text-black"
+                  className="input input-bordered input-sm input-primary max-w-xl mb-4 bg-white text-black ml-2"
                 />
               </div>
               <div>
-                <label>Profile Image</label>
+                <label>Profile Image:</label>
                 <input
                   type="file"
                   // onChange={(e) => setProfileImageFile(e.target.files[0])}
@@ -385,9 +400,9 @@ const MyProfile = () => {
 
       {isFollowerModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-2xl font-bold mb-4">Followers</h2>
-            <div className="space-y-4">
+          <div className="bg-[#B7B7B7] rounded-lg p-6 w-96 border border-2 border-primary">
+            <h2 className="text-2xl font-bold mb-4 text-black">Followers</h2>
+            <div className="space-y-4 text-black">
               {userData?.data?.followerP?.length ? (
                 userData.data.followerP.map((follower: TUser) => (
                   <div
@@ -423,9 +438,9 @@ const MyProfile = () => {
 
       {isFollowingModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-2xl font-bold mb-4">Following</h2>
-            <div className="space-y-4">
+          <div className="bg-[#B7B7B7] rounded-lg p-6 w-96 border border-2 border-primary">
+            <h2 className="text-2xl font-bold mb-4 text-black">Following</h2>
+            <div className="space-y-4 text-black">
               {userData?.data?.followingP?.length ? (
                 userData.data.followingP.map((following: TUser) => (
                   <div

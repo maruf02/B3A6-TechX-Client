@@ -114,7 +114,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <div className="navbar bg-base-100">
+      <div className="navbar bg-[#1A4870] text-white">
         <div className="navbar-start">
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -140,7 +140,17 @@ const Navbar = () => {
               {menu}
             </ul>
           </div>
-          <a className="btn btn-ghost text-xl">TechX</a>
+          <Link href="/">
+            <div className="flex flex-row items-center gap-2">
+              <img
+                src="https://i.postimg.cc/sDKNspNc/creative-computer-logo-template-23-2149213537.jpg"
+                alt=""
+                className="w-14 h-14 rounded-2xl"
+              />
+              <p className=" text-2xl font-bold text-[#F9DBBA] ">TechX</p>
+            </div>
+          </Link>
+          {/* <a className="btn btn-ghost text-xl">TechX</a> */}
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">{menu}</ul>
@@ -161,7 +171,7 @@ const Navbar = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content bg-[#1A4870] rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               {/* {isLoggedIn ? (
                 <>

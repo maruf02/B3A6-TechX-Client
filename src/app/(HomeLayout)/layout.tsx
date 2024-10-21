@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 const layout = ({ children }: { children: ReactNode }) => {
   return (
     <Providers>
-      <div>
+      <div className="bg-[#705C53] h-full min-h-full">
         <Navbar />
         {children}
       </div>

@@ -173,7 +173,7 @@ const HomePostCreate = () => {
         <Button
           type="primary"
           onClick={showModal}
-          className="w-full btn-lg text-4xl"
+          className="w-full btn-lg text-4xl text-white font-semibold"
         >
           Create a New Blog
         </Button>
@@ -203,7 +203,7 @@ const HomePostCreate = () => {
             />
 
             <div className="flex gap-5 border w-full h-16 mt-2">
-              <div className="flex gap-1 items-center">
+              <div className="flex gap-1 items-center text-black">
                 <h1>Select Category</h1>
                 <Space wrap>
                   <Select
@@ -220,7 +220,7 @@ const HomePostCreate = () => {
                 </Space>
               </div>
 
-              <div className="flex gap-1 items-center">
+              <div className="flex gap-1 items-center text-black">
                 <h1>Select Type</h1>
                 <Space wrap>
                   <Select
@@ -238,7 +238,7 @@ const HomePostCreate = () => {
               <div className="flex items-center">
                 <input
                   type="file"
-                  className="file-input w-full max-w-xs items-center bg-transparent"
+                  className="file-input text-black input-sm w-full max-w-xs items-center bg-transparent"
                   onChange={handleFileChange}
                 />
               </div>

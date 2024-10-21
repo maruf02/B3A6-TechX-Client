@@ -87,7 +87,7 @@ const AdminHomePage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto h-full min-h-[7500px]">
       <div className="w-full h-full min-h-screen  ">
         {/* cover image */}
         <div className="w-full h-96  rounded-2xl">
@@ -113,7 +113,9 @@ const AdminHomePage = () => {
         </div>
         {/* different option */}
         <div className="w-full lg:w-4/12 h-28   relative lg:left-[24%] -top-24 lg:-top-56">
-          <div className="text-4xl font-bold px-10   h-1/2">{userName}</div>
+          <div className="text-4xl font-bold px-10   h-1/2 text-black uppercase">
+            {userName}
+          </div>
           <div className="  h-1/2">
             <Segmented<string>
               options={[

@@ -14,8 +14,8 @@ const OverviewSummary = () => {
     <div className="flex justify-between mb-10">
       {/* total post */}
       <div>
-        <div className="card bg-base-100 w-96 shadow-xl">
-          <div className="card-body items-center text-center">
+        <div className="card bg-[#B7B7B7] w-96 shadow-xl">
+          <div className="card-body items-center text-center text-black">
             <h2 className="card-title">Total Post</h2>
             <h2 className="card-title">{posts.length}</h2>
           </div>
@@ -25,8 +25,8 @@ const OverviewSummary = () => {
 
       {/* total Likes */}
       <div>
-        <div className="card bg-base-100 w-96 shadow-xl">
-          <div className="card-body items-center text-center">
+        <div className="card bg-[#B7B7B7] w-96 shadow-xl">
+          <div className="card-body items-center text-center text-black">
             <h2 className="card-title">Total Likes</h2>
             <h2 className="card-title">{Likes.totalLikes}</h2>
           </div>
@@ -36,8 +36,8 @@ const OverviewSummary = () => {
 
       {/* total DisLikes */}
       <div>
-        <div className="card bg-base-100 w-96 shadow-xl">
-          <div className="card-body items-center text-center">
+        <div className="card bg-[#B7B7B7] w-96 shadow-xl">
+          <div className="card-body items-center text-center text-black">
             <h2 className="card-title">Total Dislikes</h2>
             <h2 className="card-title">{DisLike.totalDislikes}</h2>
           </div>

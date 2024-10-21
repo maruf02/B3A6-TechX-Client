@@ -96,7 +96,9 @@ const Payments = () => {
 
   return (
     <div>
-      <h1 className="text-4xl text-center py-8">Pay for Premium access</h1>
+      <h1 className="text-4xl text-center py-8 text-black font-semibold underline">
+        Pay for Premium access
+      </h1>
 
       <div>
         <button
@@ -109,10 +111,10 @@ const Payments = () => {
         {/* Modal Dialog */}
         {isOpen && (
           <dialog className="modal" open>
-            <div className="modal-box">
-              <h3 className="font-bold text-lg">Welcome!</h3>
+            <div className="modal-box bg-[#B7B7B7] text-black">
+              <h3 className="font-bold text-2xl text-center  ">Welcome!</h3>
               <p className="py-4">Amount: $20</p>
-              <p className="py-4">Expire Date:: {getEndDate()}</p>
+              <p className="py-2">Expire Date:: {getEndDate()}</p>
               <div className="modal-action">
                 <button
                   onClick={handlePaymentSubmit}
