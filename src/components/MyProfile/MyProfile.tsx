@@ -64,6 +64,7 @@ const MyProfile = () => {
   useEffect(() => {
     if (userData) {
       setValue("name", userData.data.name);
+      setValue("email", userData.data.email);
       setValue("phone", userData.data.phone);
     }
   }, [userData, setValue]);
@@ -337,7 +338,7 @@ const MyProfile = () => {
                   className="input input-bordered input-sm input-primary max-w-xl mb-4 bg-white text-black ml-2"
                 />
               </div>
-              {/* <div>
+              <div>
                 <label>Email:</label>
                 <input
                   type="email"
@@ -346,7 +347,7 @@ const MyProfile = () => {
                   readOnly
                   defaultValue={userData?.data?.email || ""}
                 />
-              </div> */}
+              </div>
 
               <div>
                 <label>Phone:</label>

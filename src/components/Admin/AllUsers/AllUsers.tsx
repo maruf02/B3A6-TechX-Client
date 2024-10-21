@@ -195,7 +195,7 @@ const UserManagement = () => {
         {/* <dialog id="AddProductModal" className="modal  "> */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-gray-400 text-black p-6 rounded-lg w-full max-w-lg">
+            <div className="bg-[#B7B7B7] text-black p-6 rounded-lg w-full max-w-lg">
               <form onSubmit={handleAddUser}>
                 <div className="flex justify-between">
                   <h2 className="text-2xl font-bold">Add New User</h2>
@@ -212,7 +212,7 @@ const UserManagement = () => {
                     type="text"
                     name="nameT"
                     required
-                    className="w-full p-2 border rounded bg-transparent text-black"
+                    className="w-full p-2 border rounded bg-white text-black"
                     placeholder="Enter user name"
                   />
                 </div>
@@ -222,7 +222,7 @@ const UserManagement = () => {
                     type="email"
                     name="email"
                     required
-                    className="w-full p-2 border rounded bg-transparent text-black"
+                    className="w-full p-2 border rounded bg-white text-black"
                     placeholder="Enter user email"
                   />
                 </div>
@@ -231,7 +231,7 @@ const UserManagement = () => {
                   <input
                     type="tel"
                     name="phone"
-                    className="w-full p-2 border rounded bg-transparent text-black"
+                    className="w-full p-2 border rounded bg-white text-black"
                     placeholder="Enter user phone"
                   />
                 </div>
@@ -241,7 +241,7 @@ const UserManagement = () => {
                     onChange={handleSelectChangeRole}
                     value={selectedRole}
                     required
-                    className="w-full p-2 border rounded bg-transparent text-black"
+                    className="w-full p-2 border rounded bg-white text-black"
                   >
                     <option value="" disabled>
                       Select Role
@@ -259,7 +259,7 @@ const UserManagement = () => {
                     onChange={handleSelectChangeIsBlock}
                     value={selectedBlock}
                     required
-                    className="w-full p-2 border rounded bg-transparent text-black"
+                    className="w-full p-2 border rounded bg-white text-black"
                   >
                     <option value="" disabled>
                       Select Block Status
@@ -276,7 +276,7 @@ const UserManagement = () => {
                   <textarea
                     name="address"
                     required
-                    className="w-full p-2 border rounded bg-transparent text-black"
+                    className="w-full p-2 border rounded bg-white text-black"
                     placeholder="Enter user address"
                   />
                 </div>
@@ -450,7 +450,7 @@ const UserManagement = () => {
             ) : (
               users.map((user: TUser) => (
                 <>
-                  <tr key={user._id} className="hover:bg-gray-300">
+                  <tr key={user._id} className="text-md hover:bg-gray-300">
                     <td>
                       <div className="flex items-center gap-3 text-black ">
                         <div className="avatar">

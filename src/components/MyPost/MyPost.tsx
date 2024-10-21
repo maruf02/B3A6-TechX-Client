@@ -170,7 +170,7 @@ const MyPost = () => {
   };
 
   return (
-    <div className="w-full h-fit   bg-[#705C53]">
+    <div className="w-full h-fit   bg-gray-400">
       <div className="w-2/4 mx-auto mb-4">
         <Button
           type="primary"

@@ -71,10 +71,10 @@ const Navbar = () => {
     }
   };
 
-  console.log("isLoggedIn", isLoggedIn);
-  console.log("role", role);
-  console.log("accesstoken", accessToken);
-  console.log("loging", LoggedIn);
+  // console.log("isLoggedIn", isLoggedIn);
+  // console.log("role", role);
+  // console.log("accesstoken", accessToken);
+  // console.log("loging", LoggedIn);
 
   const menu = (
     <>

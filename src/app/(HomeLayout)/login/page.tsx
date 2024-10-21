@@ -237,11 +237,11 @@ const LoginPage = () => {
                           </button>
                           {isModalOpen && (
                             <dialog open className="modal">
-                              <div className="modal-box bg-[#1A4870]">
+                              <div className="modal-box bg-[#B7B7B7]">
                                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                                   ✕
                                 </button>
-                                <h1 className="text-white text-3xl text-center pt-5">
+                                <h1 className="text-black text-3xl text-center pt-5">
                                   Reset Your Password
                                 </h1>
                                 <Form onFinish={handleEmailConfirmForReset}>
@@ -257,7 +257,7 @@ const LoginPage = () => {
                                     <Input
                                       type="email"
                                       placeholder="Enter your Email"
-                                      className="input input-bordered input-primary w-full max-w-xs bg-inherit text-black"
+                                      className="input input-bordered input-primary w-full max-w-xs bg-inherit text-black  bg-white"
                                     />
                                   </Form.Item>
                                   <div className="flex justify-center my-5">
@@ -275,7 +275,7 @@ const LoginPage = () => {
                                   showResetLink && (
                                     <button
                                       onClick={handleResetPass}
-                                      className="text-green-500 text-xl"
+                                      className="text-black text-xl"
                                     >
                                       Reset Link: {resetLink}
                                     </button>
@@ -320,23 +320,23 @@ const LoginPage = () => {
         {/* Success Modal */}
         {showSuccessModal && (
           <dialog id="ResetPassModal" open className="modal">
-            <div className="modal-box bg-[#1A4870]">
+            <div className="modal-box bg-[#B7B7B7]">
               <div>
                 <form onSubmit={updateNewPassword}>
                   <div className="flex justify-center pt-5 ">
-                    <h1 className="text-white text-3xl ">Set New Password</h1>
+                    <h1 className="text-black text-3xl ">Set New Password</h1>
                   </div>
                   <p className="border border-1 border-gray-400 my-3 "></p>
                   <div className="flex flex-col gap-2">
                     <div>
-                      <label className="pr-12 text-white">Email:</label>
+                      <label className="pr-12 text-black">Email:</label>
                       <input
                         type="email"
                         defaultValue={email}
                         readOnly
                         name="emailT"
                         placeholder="Enter your Email"
-                        className="input input-bordered input-sm input-primary w-full max-w-xs bg-inherit text-white"
+                        className="input input-bordered input-sm input-primary w-full max-w-xs bg-inherit text-black"
                       />
                     </div>
                     <div className="pt-2">
